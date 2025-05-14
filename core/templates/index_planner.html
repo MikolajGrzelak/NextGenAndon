@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container text-center mt-5">
+    <h2>📊 Panel Planisty</h2>
+
+    <div class="row mt-4">
+        <!-- Inne przyciski: upload plan, upload status, itp. -->
+        <div class="col-md-6 mb-3">
+            <a href="{% url 'upload_plan' %}" class="btn btn-primary w-100 p-3">📂 Wgraj plan produkcji</a>
+        </div>
+        <div class="col-md-6 mb-3">
+            <a href="{% url 'upload_status' %}" class="btn btn-warning w-100 p-3">📊 Wgraj aktualny status</a>
+        </div>
+    </div>
+
+    <!-- Nowy przycisk zamiast "plan-na-dzis" -->
+    <div class="row mt-4">
+        <div class="col-md-12 mb-3">
+            <!-- Zmieniamy przycisk "Plan na dziś" na "Widok planu" -->
+            <a href="{% url 'production_plan' %}" class="btn btn-success w-100 p-3">
+                📋 Podgląd planu produkcji
+            </a>
+        </div>
+    </div>
+    <div class="d-flex flex-column gap-3">
+        <a class="btn btn-info" href="{% url 'upload_production_log' %}">
+          Wgraj dzienny Excela (ProductionLog)
+        </a>
+        <a class="btn btn-success" href="{% url 'production_report' %}">
+          Generuj / Zobacz Raport Produkcji
+        </a>
+    </div>
+</div>
+
+{% endblock %}

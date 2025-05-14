@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">📦 Zgłoszenie do magazynu</h2>
+
+    <form method="POST" action="{% url 'call_warehouse' %}">
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Lewa strona: Formularz -->
+            <div class="mb-3">
+                <label for="location" class="form-label">📍 Lokalizacja:</label>
+                <select id="location" name="location" class="form-select" required>
+                    <option value="" selected disabled>Wybierz lokalizację...</option>
+                    <option value="gaming">🎮 Gaming</option>
+                    <option value="c2">⚙️ C2</option>
+                    <option value="rm5">🏭 RM5</option>
+                    <option value="scancoin">💰 ScanCoin</option>
+                    <option value="comestero">💳 Comestero</option>
+                    <option value="b2b">📦 B2B</option>
+                </select>
+            </div>
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label for="item_code" class="form-label">📦 Wybierz item:</label>
+                    <input type="text" id="item_code" name="item_code" class="form-control" required>
+                    <div id="suggestions" class="suggestions-box"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">🔢 Ilość:</label>
+                    <div class="input-group">
+                        <input type="number" id="quantity" name="quantity" class="form-control" required>
+                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="1">1 szt</button>
+                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="3">3 szt</button>
+                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="5">5 szt</button>
+                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="10">10 szt</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="warehouse_reason" class="form-label">📦 Powód zgłoszenia:</label>
+                    <select id="warehouse_reason" name="warehouse_reason" class="form-select" required>
+                        <option value="" selected disabled>Wybierz powód...</option>
+                        {% for reason in warehouse_reasons %}
+                            <option value="{{ reason.id }}">{{ reason.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">📝 Opis problemu:</label>
+                    <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">📦 Wyślij zgłoszenie</button>
+                <a href="{% url 'warehouse_tickets' %}" class="btn btn-secondary mt-3">🔙 Powrót do tablicy zgłoszeń</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Informacje o itemie -->
+    <div id="item-info" class="alert alert-info mt-4" style="display: none;">
+        <h5>📋 Informacje o itemie:</h5>
+        <p><strong>Opis:</strong> <span id="item-description"></span></p>
+        <p><strong>GPG:</strong> <span id="item-gpg"></span></p>
+        <p><strong>Cena:</strong> <span id="item-price"></span></p>
+        <p><strong>Dostawca:</strong> <span id="item-supplier"></span></p>
+        <p><strong>Odpowiedzialny:</strong> <span id="item-responsible"></span></p>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $(".quantity-btn").click(function() {
+            $("#quantity").val($(this).data("value"));
+        });
+
+        $("#item_code").on("input", function() {
+            var query = $(this).val();
+            if (query.length >= 1) {
+                $.ajax({
+                    url: "{% url 'autocomplete_item' %}",
+                    data: { "query": query },
+                    dataType: "json",
+                    success: function(data) {
+                        var suggestions = $("#suggestions");
+                        suggestions.empty();
+                        $.each(data.items, function(index, item) {
+                            suggestions.append("<div class='suggestion-item' data-code='" + item.code + "'>" + item.code + " - " + item.description + "</div>");
+                        });
+                    }
+                });
+            } else {
+                $("#suggestions").empty();
+            }
+        });
+
+        $(document).on("click", ".suggestion-item", function() {
+            $("#item_code").val($(this).data("code"));
+            $("#suggestions").empty();
+            
+            $.ajax({
+                url: "{% url 'get_item_details' %}",
+                data: { "item_code": $(this).data("code") },
+                dataType: "json",
+                success: function(data) {
+                    $("#item-description").text(data.description);
+                    $("#item-gpg").text(data.gpg);
+                    $("#item-price").text(data.price);
+                    $("#item-supplier").text(data.supplier);
+                    $("#item-responsible").text(data.responsible);
+                    $("#item-info").show();
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    .suggestions-box {
+        border: 1px solid #ccc;
+        background: white;
+        position: absolute;
+        width: 100%;
+        z-index: 1000;
+    }
+    .suggestion-item {
+        padding: 5px;
+        cursor: pointer;
+    }
+    .suggestion-item:hover {
+        background: #f0f0f0;
+    }
+</style>
+
+{% endblock %}

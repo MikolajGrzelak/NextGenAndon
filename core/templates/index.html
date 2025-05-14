@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Strona Główna
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1 class="mb-4">Witaj w Aplikacji do Wizualizacji Procesów Planowania</h1>
+    <p class="lead">
+      Ten panel umożliwia przegląd aktualnych zleceń produkcyjnych, statusów oraz umożliwia komunikację
+      między produkcją a planowaniem. W przyszłości znajdziesz tu również moduł HR i statystyki wydajności.
+    </p>
+    <hr/>
+
+    <div class="row mt-4">
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Zlecenia Produkcyjne</h5>
+            <p class="card-text">
+              Sprawdź i zarządzaj zleceniami w obrębie naszych linii produkcyjnych (C2, RM5, COME, Scan Coin, B2B, Gaming).
+            </p>
+            <a href="{% url 'manufacturing_orders_menu' %}" class="btn btn-primary">Przejdź</a>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Panel Problemów</h5>
+            <p class="card-text">
+              Zgłoś problem związany ze zleceniem i śledź dyskusję między działami produkcji, planowania i HR.
+            </p>
+            <a href="#" class="btn btn-danger">Przejdź</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Moduł HR</h5>
+            <p class="card-text">
+              Przypisz ludzi do zleceń, zarządzaj dostępnymi zasobami i planuj obłożenie produkcji.
+            </p>
+            <a href="#" class="btn btn-success">Przejdź</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Analizy i Wykresy</h5>
+            <p class="card-text">
+              W przyszłości zobaczysz tu statystyki, wykresy i integracje z Power BI w celu wizualizacji kluczowych wskaźników.
+            </p>
+            <a href="#" class="btn btn-secondary">Przejdź</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

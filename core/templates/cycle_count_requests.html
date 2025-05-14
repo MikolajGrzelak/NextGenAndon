@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>📋 Zgłoszenia o przeliczenie stanów</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Lewa część formularza -->
+            <div class="col-md-6">
+
+                <!-- Pole do wpisywania kodu Item (z autouzupełnieniem) -->
+                <div class="mb-3 position-relative">
+                    <label for="item_code" class="form-label">🆔 Item:</label>
+                    <input type="text" id="item_code" name="item_code" class="form-control" required autocomplete="off">
+                    <!-- Kontener dla sugestii itemu -->
+                    <div id="item_suggestions" class="item-suggestions-box"></div>
+                </div>
+
+                <!-- Pole do wpisywania nazwy Lokalizacji (z autouzupełnieniem) -->
+                <div class="mb-3 position-relative">
+                    <label for="location_input" class="form-label">🌐 Lokalizacja:</label>
+                    <input type="text" id="location_input" name="location_name" class="form-control" autocomplete="off">
+                    <!-- Kontener dla sugestii lokalizacji -->
+                    <div id="location_suggestions" class="location-suggestions-box"></div>
+                </div>
+
+                <!-- Ilość systemowa, fizyczna, komentarz -->
+                <div class="mb-3">
+                    <label class="form-label">Ilość systemowa:</label>
+                    <input type="number" name="system_qty" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ilość fizyczna:</label>
+                    <input type="number" name="physical_qty" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Komentarz:</label>
+                    <textarea name="comment" rows="4" class="form-control"></textarea>
+                </div>
+
+                <!-- Przycisk wysyłki formularza -->
+                <button type="submit" class="btn btn-success">📌 Dodaj zgłoszenie</button>
+            </div>
+
+            <!-- Prawa kolumna – wyświetlanie szczegółów itemu -->
+            <div class="col-md-5 offset-md-1">
+                <h5>ℹ️ Szczegóły wybranego itemu</h5>
+                <div id="item-info" class="p-3 border rounded bg-light" style="display: none;">
+                    <p><strong>Opis:</strong> <span id="item-description"></span></p>
+                    <p><strong>Cena:</strong> <span id="item-price"></span> PLN</p>
+                    <p><strong>GPG:</strong> <span id="item-gpg"></span></p>
+                    <p><strong>Dostawca:</strong> <span id="item-supplier"></span></p>
+                    <p><strong>Odpowiedzialny:</strong> <span id="item-responsible"></span></p>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Sekcja listy zgłoszeń -->
+    <h3 class="mt-4">📊 Lista zgłoszeń</h3>
+    <table class="table table-striped mt-2">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Lokalizacja</th>
+                <th>Ilość w systemie</th>
+                <th>Ilość fizycznie</th>
+                <th>Różnica</th>
+                <th>Komentarz</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in items %}
+            <tr>
+                <td>{{ req.item }}</td>
+                <td>{{ req.location }}</td>
+                <td>{{ req.system_qty }}</td>
+                <td>{{ req.physical_qty }}</td>
+                <td>{{ req.difference }}</td>
+                <td>{{ req.comment }}</td>
+                <td>{{ req.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- JavaScript do autouzupełniania itemu i lokalizacji -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // ────────── AUTOCOMPLETE ITEM ──────────
+    const itemCodeInput = document.getElementById("item_code");
+    const itemSuggestionsBox = document.getElementById("item_suggestions");
+
+    itemCodeInput.addEventListener("input", function() {
+        let query = this.value.trim();
+        if (query.length >= 1) {
+            // AJAX do /autocomplete-item/
+            fetch("{% url 'autocomplete_item' %}?query=" + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    itemSuggestionsBox.innerHTML = "";
+                    data.items.forEach(obj => {
+                        let div = document.createElement("div");
+                        div.classList.add("suggestion-item-item"); // klasa DEDYKOWANA dla itemu
+                        div.dataset.code = obj.code;
+                        div.textContent = obj.code + " - " + obj.description;
+                        itemSuggestionsBox.appendChild(div);
+                    });
+                });
+        } else {
+            itemSuggestionsBox.innerHTML = "";
+        }
+    });
+
+    // Klik w podpowiedź itemu
+    itemSuggestionsBox.addEventListener("click", function(e) {
+        if (e.target.classList.contains("suggestion-item-item")) {
+            let code = e.target.dataset.code;
+            itemCodeInput.value = code;
+            itemSuggestionsBox.innerHTML = "";
+            getItemDetails(code);
+        }
+    });
+
+    function getItemDetails(code) {
+        fetch("{% url 'get_item_details' %}?item_code=" + encodeURIComponent(code))
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    document.getElementById("item-description").textContent = data.description;
+                    document.getElementById("item-price").textContent = data.price;
+                    document.getElementById("item-gpg").textContent = data.gpg;
+                    document.getElementById("item-supplier").textContent = data.supplier;
+                    document.getElementById("item-responsible").textContent = data.responsible;
+                    document.getElementById("item-info").style.display = "block";
+                } else {
+                    alert(data.error);
+                    document.getElementById("item-info").style.display = "none";
+                }
+            });
+    }
+
+    // ────────── AUTOCOMPLETE LOKALIZACJI ──────────
+    const locationInput = document.getElementById("location_input");
+    const locationSuggestionsBox = document.getElementById("location_suggestions");
+
+    locationInput.addEventListener("input", function() {
+        let query = this.value.trim();
+        if (query.length > 0) {
+            fetch("/autocomplete-location/?query=" + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    locationSuggestionsBox.innerHTML = "";
+                    data.locations.forEach(loc => {
+                        let div = document.createElement("div");
+                        div.classList.add("suggestion-item-loc"); // klasa DEDYKOWANA dla lokalizacji
+                        div.textContent = loc.name;
+                        locationSuggestionsBox.appendChild(div);
+                    });
+                });
+        } else {
+            locationSuggestionsBox.innerHTML = "";
+        }
+    });
+
+    // Klik w podpowiedź lokalizacji
+    locationSuggestionsBox.addEventListener("click", function(e) {
+        if (e.target.classList.contains("suggestion-item-loc")) {
+            let locName = e.target.textContent;
+            locationInput.value = locName;
+            locationSuggestionsBox.innerHTML = "";
+        }
+    });
+
+    // Kliknięcie poza sugestiami → zamknij listy
+    document.addEventListener("click", function(e) {
+        if (!itemCodeInput.contains(e.target) && !itemSuggestionsBox.contains(e.target)) {
+            itemSuggestionsBox.innerHTML = "";
+        }
+        if (!locationInput.contains(e.target) && !locationSuggestionsBox.contains(e.target)) {
+            locationSuggestionsBox.innerHTML = "";
+        }
+    });
+});
+</script>
+
+<style>
+/* Style dla boxów z sugestiami - OSOBNE klasy dla itemów i lokalizacji */
+.item-suggestions-box {
+    border: 1px solid #ccc;
+    background: #fff;
+    position: absolute;
+    width: 100%;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+.location-suggestions-box {
+    border: 1px solid #ccc;
+    background: #fff;
+    position: absolute;
+    width: 100%;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+.suggestion-item-item, .suggestion-item-loc {
+    padding: 5px;
+}
+
+.suggestion-item-item:hover, .suggestion-item-loc:hover {
+    background: #f0f0f0;
+}
+</style>
+
+{% endblock %}

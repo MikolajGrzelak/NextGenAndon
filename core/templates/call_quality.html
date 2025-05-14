@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container text-center mt-5">
+    <h2 class="mb-4">🏅 Wezwij jakość</h2>
+    <p class="lead">Wpisz problem i wyślij zgłoszenie.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="workplace" value="{{ request.session.workplace }}">
+        <textarea name="description" class="form-control mb-3" rows="4" placeholder="Opisz problem..." required></textarea>
+        <button type="submit" class="btn btn-info w-100">📢 Wyślij zgłoszenie</button>
+    </form>
+</div>
+
+{% endblock %}

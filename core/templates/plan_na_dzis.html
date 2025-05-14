@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>📋 Plan produkcji na dziś</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>MO</th>
+                <th>Item</th>
+                <th>Opis</th>
+                <th>GPG</th>
+                <th>Linia produkcyjna</th>
+                <th>Czas produkcji</th>
+                <th>Ilość zaplanowana</th>
+                <th>Ilość wykonana</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in plan_today %}
+            <tr>
+                <td>{{ plan.mo_number }}</td>
+                <td>{{ plan.item.item_code }}</td>
+                <td>{{ plan.description }}</td>
+                <td>{{ plan.gpg }}</td>
+                <td>{{ plan.production_line }}</td>
+                <td>{{ plan.production_time }} min</td>
+                <td>{{ plan.planned_quantity }}</td>
+                <td>{{ plan.completed_quantity }}</td>
+                <td>
+                    {% if plan.status == "new" %}
+                        🟢 Nowe
+                    {% elif plan.status == "in_progress" %}
+                        🟡 W realizacji
+                    {% elif plan.status == "completed" %}
+                        🔴 Zakończone
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center">Brak planu na dziś</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

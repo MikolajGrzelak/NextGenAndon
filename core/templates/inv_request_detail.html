@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Wniosek #{{ inv_req.id }}</h2>
+<p>Status: {{ inv_req.get_status_display }}</p>
+<p>Data utworzenia: {{ inv_req.created_at }}</p>
+<p>Utworzone przez: {{ inv_req.created_by }}</p>
+
+<h3>Pozycje:</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Ilość</th>
+            <th>Lokalizacja</th>
+            <th>Scrap Code</th>
+            <th>Wartość</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for line in inv_req.lines.all %}
+        <tr>
+            <td>{{ line.item.item_code }} - {{ line.item.description }}</td>
+            <td>{{ line.quantity }}</td>
+            <td>{{ line.location.name }}</td>
+            <td>{{ line.scrap_code.code }}</td>
+            <td>{{ line.line_value|floatformat:2 }} PLN</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<h4>Łączna wartość: {{ inv_req.total_value|floatformat:2 }} PLN</h4>
+
+{% endblock %}

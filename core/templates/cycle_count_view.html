@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>📋 Lista wniosków o przeliczenie stanów magazynowych</h2>
+
+    <!-- Przycisk do strony z formularzem tworzenia nowego zgłoszenia -->
+    <a href="{% url 'cycle_count_requests' %}" class="btn btn-success mb-3">
+        📌 Dodaj nowe zgłoszenie
+    </a>
+
+    <style>
+        table td, table th {
+            white-space: nowrap;      /* Nie zawijaj wierszy */
+            vertical-align: middle;   /* W pionie wyśrodkuj */
+        }
+        .btn-group { 
+            display: inline-flex;     /* Grupa przycisków w linii */
+        }
+        .btn-group a.btn {
+            margin-right: 5px;        /* Odstęp między przyciskami */
+        }
+    </style>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Lokalizacja</th>
+                <th>Ilość w systemie</th>
+                <th>Ilość fizycznie</th>
+                <th>Różnica</th>
+                <th>Komentarz</th>
+                <th>Status</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req.item }}</td>
+                <td>{{ req.location }}</td>
+                <td>{{ req.system_qty }}</td>
+                <td>{{ req.physical_qty }}</td>
+                <td>{{ req.difference }}</td>
+                <td>{{ req.comment }}</td>
+                <td><strong>{{ req.get_status_display }}</strong></td>
+                <td>
+                    {% if req.status == "new" %}
+                        <!-- Zmieniamy z 'open' na 'review' -->
+                        <a href="{% url 'update_cycle_count_status' req.id 'review' %}"
+                           class="btn btn-warning btn-sm">🔄 W trakcie</a>
+
+                    {% elif req.status == "review" %}
+                        <!-- Dopiero w tym statusie widać kolejne przyciski -->
+                        <a href="{% url 'update_cycle_count_status' req.id 'closed' %}"
+                           class="btn btn-primary btn-sm">✅ Znalezione</a>
+                        <a href="{% url 'update_cycle_count_status' req.id 'removed' %}"
+                           class="btn btn-danger btn-sm">❌ Do usunięcia</a>
+
+                    {% else %}
+                        <!-- Jeśli status inny niż open/review, np. closed/removed,
+                             nic nie wyświetlamy albo pokazujemy np. 'Zamknięty' -->
+                        <span class="text-muted">Brak akcji</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">Brak zgłoszeń</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

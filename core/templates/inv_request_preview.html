@@ -1,0 +1,41 @@
+<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\inv_request_preview.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Podgląd Wniosku Inwentaryzacyjnego</h2>
+  <p class="text-muted">Sprawdź dane przed złożeniem wniosku.</p>
+
+  <form method="POST" action="{% url 'inv_request_submit' %}">
+    {% csrf_token %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Kod Itemu</th>
+          <th>Ilość</th>
+          <th>Lokalizacja</th>
+          <th>Kod Scrapu</th>
+          <th>Cena</th>
+          <th>Wartość</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for data in preview_data %}
+        <tr>
+          <td>{{ data.item_code }}</td>
+          <td>{{ data.quantity }}</td>
+          <td>{{ data.location }}</td>
+          <td>{{ data.scrap_code }}</td>
+          <td>{{ data.price|floatformat:2 }} PLN</td>
+          <td>{{ data.value|floatformat:2 }} PLN</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="text-right">
+      <strong>Łączna wartość wniosku: {{ total_value|floatformat:2 }} PLN</strong>
+    </div>
+    <button type="submit" class="btn btn-primary">Zatwierdź Wniosek</button>
+    <a href="javascript:history.back()" class="btn btn-secondary">Wróć</a>
+  </form>
+</div>
+{% endblock %}

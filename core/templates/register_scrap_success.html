@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-success">✅ Odpady zostały zarejestrowane!</h2>
+    <p class="mt-3">
+        <a href="{% url 'register_scrap' %}" class="btn btn-primary">➕ Rejestruj kolejny odpad</a>
+        {% if request.session.workplace %}
+            <a href="{% url 'daily_panel' workplace=request.session.workplace %}" class="btn btn-secondary">🔙 Powrót</a>
+        {% else %}
+            <a href="{% url 'index' %}" class="btn btn-warning">🏠 Strona główna</a>
+        {% endif %}
+    </p>
+</div>
+
+{% endblock %}

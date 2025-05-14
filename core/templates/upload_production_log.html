@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Wgraj plik Excela (ProductionLog)</h2>
+
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="file" class="form-label">Wybierz plik Excel (.xlsx)</label>
+            <input type="file" class="form-control" id="file" name="file" accept=".xlsx,.xls">
+        </div>
+        <button type="submit" class="btn btn-primary">Wgraj</button>
+    </form>
+
+    <div id="message" class="mt-3"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$("#uploadForm").submit(function(e){
+    e.preventDefault();
+    let formData = new FormData(this);
+    $.ajax({
+        url: "",
+        method: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(resp){
+            if(resp.success){
+                $("#message").html("<div class='alert alert-success'>Wgrano poprawnie.</div>");
+            } else {
+                $("#message").html(`<div class='alert alert-danger'>Błąd: ${resp.error}</div>`);
+            }
+        },
+        error: function(){
+            $("#message").html("<div class='alert alert-danger'>Błąd połączenia</div>");
+        }
+    });
+});
+</script>
+
+{% endblock %}

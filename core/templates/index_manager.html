@@ -1,0 +1,49 @@
+<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\index_manager.html -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container text-center mt-5">
+    <h2 class="mb-4">📊 Panel Managera</h2>
+    <p class="lead">Wybierz akcję, którą chcesz wykonać.</p>
+
+    <div class="row mt-4">
+        <!-- Tablice zgłoszeń -->
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'display_board' 'quality' %}" class="btn btn-primary w-100 p-3">📋 Tablica Zgłoszeń Jakości</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'display_board' 'technician' %}" class="btn btn-primary w-100 p-3">🔧 Tablica Zgłoszeń Technicznych</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'display_board' 'warehouse' %}" class="btn btn-primary w-100 p-3">📦 Tablica Zgłoszeń Magazynowych</a>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Utworzenie zgłoszenia -->
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'call_quality' %}" class="btn btn-success w-100 p-3">➕ Zgłoszenie Jakości</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'call_technician' %}" class="btn btn-success w-100 p-3">➕ Zgłoszenie Techniczne</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'call_warehouse' %}" class="btn btn-success w-100 p-3">➕ Zgłoszenie Magazynowe</a>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Podgląd planu -->
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'production_plan' %}" class="btn btn-warning w-100 p-3">📅 Podgląd Planu Produkcji</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'cycle_count_view' %}" class="btn btn-warning w-100 p-3">📋 Cycle Count</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'production_report' %}" class="btn btn-warning w-100 p-3">📊 Raport Produkcji</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>📂 Wgraj Statusy Zleceń</h2>
+
+    <!-- Wizualna wskazówka - jak powinien wyglądać plik Excel -->
+    <div class="alert alert-info">
+        <p>Twój plik Excel powinien zawierać następujące kolumny:</p>
+        <table class="table table-bordered bg-white">
+            <thead>
+                <tr>
+                    <th>MO Number</th>
+                    <th>Item Code</th>
+                    <th>Planned Quantity</th>
+                    <th>Completed Quantity</th>
+                    <th>MO Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>MO12345</td>
+                    <td>ITEM001</td>
+                    <td>100</td>
+                    <td>80</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td>MO12346</td>
+                    <td>ITEM002</td>
+                    <td>200</td>
+                    <td>200</td>
+                    <td>99</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Wskazówki:</p>
+        <ul>
+            <li><strong>MO Number</strong>: Numer zlecenia (np. MO12345)</li>
+            <li><strong>Item Code</strong>: Kod produktu z bazy Item (np. ITEM001)</li>
+            <li><strong>Planned Quantity</strong>: Łączna ilość zaplanowana</li>
+            <li><strong>Completed Quantity</strong>: Ilość faktycznie wykonana</li>
+            <li><strong>MO Status</strong>: Kod statusu zlecenia (np. "60" = W realizacji)</li>
+        </ul>
+    </div>
+
+    {% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="file" class="form-label">Plik (.xlsx):</label>
+            <input type="file" id="file" name="file" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">📤 Wgraj</button>
+    </form>
+</div>
+{% endblock %}

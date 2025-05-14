@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>🏪 Panel Magazynu</h2>
+    
+    <div class="row mt-4">
+        <!-- 🏪 Sekcja 1: Zgłoszenia produkcji do magazynu -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    📦 Zgłoszenia magazynowe (Warehouse Requests)
+                </div>
+                <div class="card-body">
+                    <p>Monitoruj i zarządzaj zgłoszeniami magazynowymi od produkcji.</p>
+                    <a href="{% url 'warehouse_tickets' %}" class="btn btn-primary">📋 Przejdź do zgłoszeń</a>
+                    <a href="{% url 'call_warehouse' %}" class="btn btn-info">➕ Nowe zgłoszenie</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🛠️ Sekcja 2: Wnioski inwentaryzacyjne -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    📝 Wnioski inwentaryzacyjne (Inventory Requests)
+                </div>
+                <div class="card-body">
+                    <p>Dodawaj i zatwierdzaj wnioski o modyfikację stanów magazynowych.</p>
+                    <a href="{% url 'inv_request_list' %}" class="btn btn-success">📋 Lista wniosków</a>
+                    <a href="{% url 'inv_request_create' %}" class="btn btn-info">➕ Nowy wniosek</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔄 Sekcja 3: Cycle Count (Przeliczanie stanów) -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    🔄 Wnioski o przeliczenie (Cycle Count)
+                </div>
+                <div class="card-body">
+                    <p>Zgłaszaj niezgodności i zarządzaj przeliczeniami stanów.</p>
+                    <a href="{% url 'cycle_count_view' %}" class="btn btn-warning">📋 Lista zgłoszeń</a>
+                    <a href="{% url 'cycle_count_requests' %}" class="btn btn-info">➕ Nowe zgłoszenie</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

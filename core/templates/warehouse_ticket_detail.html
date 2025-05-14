@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>📦 Zgłoszenie #{{ ticket.id }}</h2>
+    <p><strong>Tytuł:</strong> {{ ticket.title }}</p>
+    <p><strong>Miejsce pracy:</strong> {{ ticket.workplace }}</p>
+    <p><strong>Item:</strong> {{ ticket.item.item_code }} - {{ ticket.item.description }}</p>
+    <p><strong>Opis:</strong> {{ ticket.description }}</p>
+    <p><strong>Status:</strong> {{ ticket.get_status_display }}</p>
+
+    <h3>💬 Komentarze</h3>
+    <div id="comments-section">
+        {% for comment in ticket.comments.all %}
+            <p><strong>{{ comment.created_by }}</strong>: {{ comment.text }} <small>({{ comment.created_at }})</small></p>
+        {% endfor %}
+    </div>
+
+    <form id="comment-form" method="POST">
+        {% csrf_token %}
+        <textarea id="comment-text" name="text" class="form-control" placeholder="Dodaj komentarz..." required></textarea>
+        <button type="submit" class="btn btn-primary mt-2">💾 Dodaj komentarz</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $("#comment-form").submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            url: "{% url 'add_warehouse_comment' ticket.id %}",
+            method: "POST",
+            data: {
+                text: $("#comment-text").val(),
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            dataType: "json",
+            success: function(data) {
+                $("#comments-section").append(
+                    `<p><strong>${data.user}</strong>: ${data.text} <small>(${data.created_at})</small></p>`
+                );
+                $("#comment-text").val("");
+            },
+            error: function(xhr, status, error) {
+                alert("Błąd przy dodawaniu komentarza: " + xhr.responseText);
+            }
+        });
+    });
+</script>
+
+{% endblock %}

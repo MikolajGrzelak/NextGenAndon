@@ -1,0 +1,198 @@
+<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Moja Aplikacja{% endblock %}</title>
+    
+    <!-- Bootstrap CSS (CDN) -->
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    >
+    
+    <!-- Bootstrap Icons (CDN) -->
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
+    >
+    
+    <!-- Twój własny plik style.css (jeśli potrzebny) -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_head %}{% endblock %}
+    <style>
+        .notification-dropdown {
+            position: absolute;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            width: 300px;
+            display: none;
+            z-index: 1000;
+        }
+        .notification-dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .notification-dropdown li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .notification-dropdown li.unread {
+            font-weight: bold;
+        }
+        .notification-dropdown li a {
+            text-decoration: none;
+            color: black;
+        }
+        .notification-icon {
+            margin-right: 20px;
+        }
+        .notification-icon .badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+        }
+    </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center">
+        <a class="navbar-brand me-2" href="{% url 'index' %}">🏭 Panel Produkcji</a>
+
+        {% if user.is_authenticated and user.groups.all.0.name == "Produkcja" and request.session.workplace %}
+            <a class="btn btn-primary me-3" href="{% url 'daily_panel' request.session.workplace %}">📋 Daily Panel</a>
+        {% endif %}
+      </div>
+
+      <div class="d-flex align-items-center text-white ms-auto">
+        {% if user.is_authenticated %}
+          <span class="me-3"><i class="bi bi-person-fill"></i> {{ user.username }}</span>
+          {% if user.is_authenticated and user.groups.all|join:", " in "Produkcja,Lider" and request.session.workplace %}
+            <span class="me-3">🏭 Miejsce pracy: <strong>{{ request.session.workplace|default:"Nie wybrano" }}</strong></span>
+            <form action="{% url 'reset_workplace' %}" method="post" class="d-inline">        
+              {% csrf_token %}
+              <button type="submit" class="btn btn-warning me-2">Zmień miejsce</button>
+            </form>
+          {% endif %}
+          <div class="notification-icon" style="position: relative;">
+            <a href="#" id="notification-icon">
+              <i class="bi bi-envelope"></i>
+              <span id="notification-count" class="badge badge-danger">0</span>
+            </a>
+            <div class="notification-dropdown" id="notification-dropdown">
+              <ul id="notification-list"></ul>
+            </div>
+          </div>
+          <form action="{% url 'logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Wyloguj</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  {% if messages %}
+  <div class="container mt-2">
+    {% for msg in messages %}
+      {% if msg.tags == "error" %}
+        <div class="alert alert-danger">
+          {{ msg }}
+        </div>
+      {% elif msg.tags == "success" %}
+        <div class="alert alert-success">
+          {{ msg }}
+        </div>
+      {% else %}
+        <div class="alert alert-info">
+          {{ msg }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="container mt-4">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Bootstrap JS (CDN) -->
+  <script 
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+  </script>
+  
+  <!-- Twój plik JS (opcjonalnie) -->
+  <script src="{% static 'js/script.js' %}"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    $(document).ready(function() {
+      function loadNotifications() {
+        $.get("{% url 'get_unread_notifications' %}", function(data) {
+          $("#notification-count").text(data.count);
+          var list = $("#notification-list");
+          list.empty();
+          data.notifications.forEach(function(notification) {
+            var item = $("<li>").addClass(notification.read ? "" : "unread");
+            var link = $("<a>").attr("href", notification.url).text(notification.message).click(function(e) {
+              e.preventDefault();
+              markAsRead(notification.id, notification.url);
+            });
+            item.append(link);
+            list.append(item);
+          });
+        });
+      }
+
+      function markAsRead(notificationId, url) {
+        $.ajax({
+          type: "POST",
+          url: "{% url 'mark_as_read' 0 %}".replace('0', notificationId),
+          headers: {'X-CSRFToken': csrftoken},
+          success: function() {
+            loadNotifications();
+            window.location.href = url;
+          }
+        });
+      }
+
+      $("#notification-icon").click(function(e) {
+        e.preventDefault();
+        $("#notification-dropdown").toggle();
+        loadNotifications();
+      });
+
+      $(document).click(function(e) {
+        if (!$(e.target).closest(".notification-icon").length) {
+          $("#notification-dropdown").hide();
+        }
+      });
+
+      loadNotifications();
+    });
+  </script>
+</body>
+</html>

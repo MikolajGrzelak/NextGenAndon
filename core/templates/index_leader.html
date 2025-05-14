@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container text-center mt-5">
+    <h2 class="mb-4">📋 Panel Lidera</h2>
+    
+    <div class="row mt-4">
+        <div class="col-md-3 mb-3">
+            <a href="{% url 'call_technician' %}" class="btn btn-danger w-100 p-3">🔧 Wezwij Technika</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="{% url 'call_engineer' %}" class="btn btn-warning w-100 p-3">🛠️ Wezwij Inżyniera</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="{% url 'call_quality' %}" class="btn btn-info w-100 p-3">🏅 Wezwij Jakość</a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="{% url 'register_scrap' %}" class="btn btn-dark w-100 p-3">🗑️ Zgłoś Scrap</a>
+        </div>
+    </div>
+
+    <!-- Nowe przyciski dla magazynu -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <a href="{% url 'call_warehouse' %}" class="btn btn-secondary w-100 p-3">📦 Wezwij Magazyn</a>
+        </div>
+        <div class="col-md-6 mb-3">
+            <a href="{% url 'warehouse_tickets' %}" class="btn btn-success w-100 p-3">📋 Tablica Zgłoszeń Magazynu</a>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-3 mb-3">
+            <a href="{% url 'display_board' category='technician' %}" class="btn btn-danger w-100 p-3">
+                🔧 Tablica Zgłoszeń Techników
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="{% url 'display_board' category='engineer' %}" class="btn btn-warning w-100 p-3">
+                🛠️ Tablica Zgłoszeń Inżynierów
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="{% url 'display_board' category='quality' %}" class="btn btn-info w-100 p-3">
+                🏅 Tablica Jakości
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

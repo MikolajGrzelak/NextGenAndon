@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Zlecenia Produkcyjne{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h2>Zlecenia Produkcyjne</h2>
+  <hr/>
+  <p>Wybierz jedną z opcji:</p>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <a href="{% url 'upload_plan' %}" class="btn btn-primary w-100">
+        Wgraj plik z planem
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'upload_status' %}" class="btn btn-secondary w-100">
+        Wgraj aktualny status zleceń
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'plan_na_dzis' %}" class="btn btn-success w-100">
+        Plan na dziś
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,172 @@
+<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\register_scrap.html -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">🗑️ Rejestracja odpadu</h2>
+
+    <form method="POST" action="{% url 'register_scrap' %}">
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Lewa strona: Formularz -->
+            <div class="col-md-6">
+                <div class="mb-3 position-relative">
+                    <label for="item_code" class="form-label">📦 Podaj numer itemu:</label>
+                    <input type="text" id="item_code" name="item_code" class="form-control" required autocomplete="off">
+                    <div id="suggestions" class="suggestions-box"></div> 
+                </div>
+
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">🔢 Ilość:</label>
+                    <div class="input-group">
+                        <input type="number" id="quantity" name="quantity" class="form-control" required>
+                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="1">1 szt</button>
+                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="3">3 szt</button>
+                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="5">5 szt</button>
+                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="10">10 szt</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="quality_reason" class="form-label">⚠️ Powód odpadów:</label>
+                    <select id="quality_reason" name="quality_reason" class="form-select" required>
+                        <option value="" selected disabled>Wybierz powód...</option>
+                        {% for reason in quality_reasons %}
+                            <option value="{{ reason.id }}">{{ reason.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Checkbox do automatycznego tworzenia zgłoszenia magazynowego -->
+                <div class="mb-3 form-check">
+                    <input type="checkbox" id="create_warehouse_request" name="create_warehouse_request" class="form-check-input">
+                    <label for="create_warehouse_request" class="form-check-label">📦 Utwórz zgłoszenie magazynowe</label>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" id="create_quality_request" name="create_quality_request" class="form-check-input">
+                    <label for="create_quality_request" class="form-check-label">📋 Weryfikacja stocku przez Jakość</label>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-danger">🗑️ Zarejestruj odpad</button>
+                    {% if request.session.workplace %}
+                        <a href="{% url 'daily_panel' workplace=request.session.workplace %}" class="btn btn-secondary">🔙 Powrót</a>
+                    {% else %}
+                        <a href="{% url 'index' %}" class="btn btn-warning">🏠 Strona główna</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Prawa strona: Kafelki -->
+            <div class="col-md-5 offset-md-1">
+                <h4>📦 Wybierz grupę materiałową dla C2</h4>
+                <div id="material-groups" class="d-flex flex-wrap gap-2">
+                    {% for group in material_groups %}
+                        <button class="btn btn-outline-primary material-group" data-group="{{ group.name }}">{{ group.name }}</button>
+                    {% endfor %}
+                </div>
+
+                <div id="material-items" class="mt-4 d-flex flex-wrap gap-2"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Stylizacja podpowiedzi */
+    .suggestions-box {
+        position: absolute;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        width: 100%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Uzupełnianie ilości po kliknięciu w przycisk
+        $(".quantity-btn").click(function() {
+            $("#quantity").val($(this).data("value"));
+        });
+
+        // Autocomplete dla pola item_code
+        $("#item_code").on("input", function() {
+            var query = $(this).val();
+            if (query.length >= 1) {
+                $.ajax({
+                    url: "{% url 'autocomplete_item' %}",
+                    data: { "query": query },
+                    dataType: "json",
+                    success: function(data) {
+                        var suggestions = $("#suggestions");
+                        suggestions.empty();
+                        $.each(data.items, function(index, item) {
+                            suggestions.append("<div class='suggestion-item' data-code='" + item.code + "'>" + item.code + " - " + item.description + "</div>");
+                        });
+                    }
+                });
+            } else {
+                $("#suggestions").empty();
+            }
+        });
+
+        // Wybór podpowiedzi
+        $(document).on("click", ".suggestion-item", function() {
+            $("#item_code").val($(this).data("code"));
+            $("#suggestions").empty();
+        });
+
+        // Wybór grupy materiałowej
+        $(".material-group").click(function(e) {
+            e.preventDefault(); // Zapobiega przeładowaniu strony
+            var groupName = $(this).data("group");
+
+            // Pobieranie itemów dla wybranej grupy
+            $.ajax({
+                url: "{% url 'get_items_by_group' %}",
+                data: { "group": groupName },
+                dataType: "json",
+                success: function(data) {
+                    var materialItems = $("#material-items");
+                    materialItems.empty();
+                    if (data.items.length === 0) {
+                        materialItems.append("<p class='text-danger'>Brak itemów w tej grupie.</p>");
+                    } else {
+                        $.each(data.items, function(index, item) {
+                            materialItems.append("<button class='btn btn-outline-success material-item' data-code='" + item.item_code + "'>" + item.item_code + " - " + item.description + "</button>");
+                        });
+                    }
+                },
+                error: function() {
+                    alert("Wystąpił błąd podczas pobierania itemów.");
+                }
+            });
+        });
+
+        // Wybór konkretnego itemu
+        $(document).on("click", ".material-item", function(e) {
+            e.preventDefault(); // Zapobiega przeładowaniu strony
+            var itemCode = $(this).data("code");
+            $("#item_code").val(itemCode); // Wypełnia pole "Podaj numer itemu"
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* Stylizacja dla zgłoszeń */
+    .ticket-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    /* Domyślny styl zgłoszeń */
+    .ticket {
+        padding: 20px;
+        border-radius: 10px;
+        width: 30%;
+        min-width: 300px;
+        transition: border-color 0.5s ease-in-out;
+    }
+
+    /* Kolor dla nowego zgłoszenia */
+    .status-new {
+        background-color: #f8d7da;
+        border: 3px solid transparent;
+    }
+
+    /* Efekt mrugania dla nowych zgłoszeń */
+    @keyframes pulse {
+        0% { border-color: #ff5757; }
+        50% { border-color: #ffebeb; }
+        100% { border-color: #ff5757; }
+    }
+
+    .blinking {
+        animation: pulse 1.2s infinite alternate;
+    }
+
+    /* Kolor dla zgłoszeń w realizacji / zamkniętych */
+    .status-in_progress, .status-resolved {
+        background-color: rgb(255, 255, 255); /* Białe tło */
+    }
+</style>
+
+<div class="ticket-container">
+    {% for ticket in tickets %}
+        <div class="ticket 
+                    {% if ticket.status == 'new' %}status-new blinking{% endif %}
+                    {% if ticket.status == 'in_progress' %}status-in_progress{% endif %}
+                    {% if ticket.status == 'resolved' %}status-resolved{% endif %}">
+            <p><strong>Lokalizacja:</strong> {{ ticket.get_location_display }}</p>
+            <p><strong>Item:</strong> {{ ticket.item.item_code }}</p>
+            <p><strong>Ilość:</strong> {{ ticket.quantity }}</p>
+            <p><strong>Opis:</strong> {{ ticket.description }}</p>
+            <p><strong>Status:</strong> {{ ticket.get_status_display }}</p>
+
+            <div class="ticket-buttons">
+                <a href="{% url 'warehouse_ticket_detail' ticket.id %}" class="btn btn-comment">
+                    💬 Zobacz i dodaj komentarz
+                </a>
+
+                {% if ticket.status == "new" %}
+                    <a href="{% url 'take_warehouse_ticket' ticket.id %}" class="btn btn-warning">🔄 Podejmij</a>
+                {% elif ticket.status == "in_progress" %}
+                    <a href="{% url 'close_warehouse_ticket' ticket.id %}" class="btn btn-success">✅ Zamknij</a>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p>Brak zgłoszeń.</p>
+    {% endfor %}
+</div>
+
+
+<!-- Odświeżanie strony co 5 sekund -->
+<script>
+    setTimeout(function() {
+        location.reload();
+    }, 5000);
+</script>
+
+{% endblock %}

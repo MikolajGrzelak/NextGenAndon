@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container text-center mt-5">
+    <h2 class="mb-4">🌟 Wybierz swój panel</h2>
+    <p class="lead">Wybierz moduł, do którego chcesz przejść.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'index_production' %}" class="btn btn-primary w-100 p-3">👷 Panel Produkcji</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'index_leader' %}" class="btn btn-success w-100 p-3">📋 Panel Lidera</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'index_planner' %}" class="btn btn-warning w-100 p-3">📅 Panel Planisty</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'index_manager' %}" class="btn btn-danger w-100 p-3">📊 Panel Managera</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'warehouse_index' %}" class="btn btn-info w-100 p-3">📦 Panel Magazynu</a>
+        </div>
+        <div class="col-md-4 mb-3">
+        <a href="{% url 'cycle_count_report' %}" class="btn btn-info mt-3">
+            📊 Raport Cycle Count</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

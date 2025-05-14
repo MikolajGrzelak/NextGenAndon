@@ -1,0 +1,110 @@
+<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\inv_request_list.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Lista nowych wniosków</h2>
+<div class="d-flex justify-content-between">
+    <a href="{% url 'inv_request_create' %}" class="btn btn-primary">Nowy wniosek</a>
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="filterMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Filtruj
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterMenuButton">
+            <form method="GET" action="{% url 'inv_request_list' %}" class="px-4 py-3">
+                <div class="form-group">
+                    <label for="created_from">Wnioski utworzone od:</label>
+                    <input type="date" id="created_from" name="created_from" class="form-control" value="{{ request.GET.created_from }}">
+                </div>
+                <div class="form-group">
+                    <label for="created_to">Wnioski utworzone do:</label>
+                    <input type="date" id="created_to" name="created_to" class="form-control" value="{{ request.GET.created_to }}">
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Filtruj</button>
+            </form>
+        </ul>
+    </div>
+</div>
+
+{% if request.GET.created_from or request.GET.created_to %}
+<div class="mt-3">
+    <a href="{% url 'inv_request_list' %}" class="btn btn-link text-danger">
+        Usuń filtry <span class="bi bi-x"></span>
+    </a>
+</div>
+{% endif %}
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Data utworzenia</th>
+            <th>Wartość</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for req in page_obj %}
+        <tr>
+            <td>{{ req.id }}</td>
+            <td>{{ req.get_status_display }}</td>
+            <td>{{ req.created_at }}</td>
+            <td>{{ req.total_value|floatformat:2 }} PLN</td>
+            <td>
+                <a href="{% url 'inv_request_detail' req.id %}" class="btn btn-info">Podgląd</a>
+                {% if req.status == 'awaiting_magazyn' %}
+                    {% if 'Magazyn' in user_groups %}
+                        <a href="{% url 'inv_request_approve' req.id %}" class="btn btn-success">Zatwierdź</a>
+                        <a href="{% url 'inv_request_reject' req.id %}" class="btn btn-danger">Odrzuć</a>
+                    {% endif %}
+                {% elif req.status == 'awaiting_dyrektor' %}
+                    {% if 'Dyrektor' in user_groups %}
+                        <a href="{% url 'inv_request_approve' req.id %}" class="btn btn-success">Zatwierdź</a>
+                        <a href="{% url 'inv_request_reject' req.id %}" class="btn btn-danger">Odrzuć</a>
+                    {% endif %}
+                {% elif req.status == 'awaiting_cycle' %}
+                    {% if 'CycleCount' in user_groups %}
+                        <a href="{% url 'inv_request_approve' req.id %}" class="btn btn-success">Zatwierdź</a>
+                        <a href="{% url 'inv_request_reject' req.id %}" class="btn btn-danger">Odrzuć</a>
+                    {% endif %}
+                {% endif %}
+                {% if req.created_by == user %}
+                    <a href="{% url 'inv_request_cancel' req.id %}" class="btn btn-warning">Anuluj</a>
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="5">Brak wniosków</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginacja -->
+<nav>
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}">Pierwsza</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}">Poprzednia</a>
+            </li>
+        {% endif %}
+        <li class="page-item disabled">
+            <span class="page-link">Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}">Następna</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}">Ostatnia</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+<!-- Suma wartości zatwierdzonych wniosków w bieżącym miesiącu -->
+<div class="mt-3">
+    <strong>Suma wartości zatwierdzonych wniosków w tym miesiącu: {{ total_approved_value|floatformat:2 }} PLN</strong>
+</div>
+{% endblock %}

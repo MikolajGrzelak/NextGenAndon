@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container text-center mt-5">
+    <h2 class="mb-4">🏭 Gdzie dzisiaj pracujesz?</h2>
+    <p class="lead">Wybierz swoją linię produkcyjną.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'production_c2' %}" class="btn btn-primary w-100 p-3">🛠️ Produkcja C2</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'set_workplace' 'RM5' %}" class="btn btn-success w-100 p-3">⚙️ Produkcja RM5</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'set_workplace' 'B2B' %}" class="btn btn-warning w-100 p-3">📦 Produkcja B2B</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'set_workplace' 'Gaming' %}" class="btn btn-danger w-100 p-3">🎰 Produkcja Gaming</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'set_workplace' 'ScanCoin' %}" class="btn btn-info w-100 p-3">💰 Produkcja ScanCoin</a>
+        </div>
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'set_workplace' 'Comestero' %}" class="btn btn-dark w-100 p-3">🔄 Produkcja Comestero</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
