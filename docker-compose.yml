@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   andon-signals:
-    build: .
+    build: /docker/build-files/andon-signals
     container_name: andon-signals
     restart: always
     volumes:
