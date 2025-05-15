@@ -9,6 +9,6 @@ services:
       - /docker/andon-signals/app:/app
       - /docker/andon-signals/sqlite_data:/app/db.sqlite3  # Dodanie wolumenu na bazę SQLite
     ports:
-      - "8000:8000"
+      - "8192:8000"
     env_file:
       - .env
