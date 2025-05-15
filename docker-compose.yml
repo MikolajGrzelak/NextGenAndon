@@ -6,8 +6,7 @@ services:
     container_name: andon-signals
     restart: always
     volumes:
-      - /docker/andon-signals/app:/app
-      - /docker/andon-signals/sqlite_data:/app/db.sqlite3  # Dodanie wolumenu na bazę SQLite
+      - /docker/andon-signals/sqlite_data/db.sqlite3:/app/db.sqlite3  # Dodanie wolumenu na bazę SQLite
     ports:
       - "8192:8000"
     env_file:
