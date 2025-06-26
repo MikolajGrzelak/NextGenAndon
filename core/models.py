@@ -342,9 +342,6 @@ class Profile(models.Model):
     def __str__(self):
         return f"Profil: {self.user.username}" 
 
-
-    def __str__(self):
-        return self.name  
     
 class C2MaterialGroup(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name="Grupa materiałowa (np. Korpus, Płytka)")
