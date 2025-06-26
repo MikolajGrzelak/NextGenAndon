@@ -132,6 +132,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
     "https://andon-signals.suzo.int",
+    "http://andon-signals.suzo.int",   # dodaj też http, jeśli reverse proxy nie używa https do backendu
 ]
 
 
