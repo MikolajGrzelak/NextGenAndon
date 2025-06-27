@@ -524,7 +524,7 @@ def call_quality(request):
          # Tworzenie powiadomień dla grupy Jakości
         quality_group = Group.objects.get(name="Jakość")
         for user in quality_group.user_set.all():
-            create_notification(user, f"Nowe zgłoszenie do jakości: {ticket.description}", url=f"/display-board/quality/")
+            create_notification(user, f"Nowe zgłoszenie do jakości", url=f"/display-board/quality/")
 
         messages.success(request, "Zgłoszenie do technika zostało wysłane!")
         return redirect("display_board", category="quality")
@@ -580,7 +580,7 @@ def call_engineer(request):
          # Tworzenie powiadomień dla grupy Inżynierów
         engineer_group = Group.objects.get(name="Inżynier")
         for user in engineer_group.user_set.all():
-            create_notification(user, f"Nowe zgłoszenie do inżyniera: {ticket.description}", url=f"/display-board/engineer/")
+            create_notification(user, f"Nowe zgłoszenie do inżyniera od {ticket.created_by}", url=f"/display-board/engineer/")
 
         messages.success(request, "Zgłoszenie do inżyniera zostało wysłane!")
         return redirect("display_board", category="engineer")
@@ -703,7 +703,7 @@ def call_warehouse(request):
             )
             magazyn_group = Group.objects.get(name="Magazyn")
             for user in magazyn_group.user_set.all():
-                create_notification(user, f"Nowe wezwanie do magazynu: {WarehouseRequest.description}", url=f"/warehouse-tickets/{WarehouseRequest.id}/")
+                create_notification(user, f"Nowe wezwanie do magazynu", url=f"/warehouse-tickets/{WarehouseRequest.id}/")
             
             messages.success(request, "Zgłoszenie zostało wysłane do magazynu.")
             return redirect("warehouse_tickets")
