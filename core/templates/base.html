@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\base.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,19 +5,16 @@
     <meta charset="UTF-8">
     <title>{% block title %}Moja Aplikacja{% endblock %}</title>
     
-    <!-- Bootstrap CSS (CDN) -->
     <link 
       rel="stylesheet" 
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     >
     
-    <!-- Bootstrap Icons (CDN) -->
     <link 
       rel="stylesheet" 
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
     >
     
-    <!-- Twój własny plik style.css (jeśli potrzebny) -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     {% block extra_head %}{% endblock %}
@@ -64,7 +60,7 @@
       <div class="d-flex align-items-center">
         <a class="navbar-brand me-2" href="{% url 'index' %}">🏭 Panel Produkcji</a>
 
-        {% if user.is_authenticated and user.groups.all.0.name == "Produkcja" and request.session.workplace %}
+        {% if user.is_authenticated and user.groups.filter(name="Produkcja").exists and request.session.workplace %}
             <a class="btn btn-primary me-3" href="{% url 'daily_panel' request.session.workplace %}">📋 Daily Panel</a>
         {% endif %}
       </div>
@@ -72,9 +68,9 @@
       <div class="d-flex align-items-center text-white ms-auto">
         {% if user.is_authenticated %}
           <span class="me-3"><i class="bi bi-person-fill"></i> {{ user.username }}</span>
-          {% if user.is_authenticated and user.groups.all|join:", " in "Produkcja,Lider" and request.session.workplace %}
+          {% if user.is_authenticated and (user.groups.filter(name="Produkcja").exists or user.groups.filter(name="Lider").exists) and request.session.workplace %}
             <span class="me-3">🏭 Miejsce pracy: <strong>{{ request.session.workplace|default:"Nie wybrano" }}</strong></span>
-            <form action="{% url 'reset_workplace' %}" method="post" class="d-inline">        
+            <form action="{% url 'reset_workplace' %}" method="post" class="d-inline">          
               {% csrf_token %}
               <button type="submit" class="btn btn-warning me-2">Zmień miejsce</button>
             </form>
@@ -121,12 +117,10 @@
     {% block content %}{% endblock %}
   </div>
 
-  <!-- Bootstrap JS (CDN) -->
   <script 
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
   </script>
   
-  <!-- Twój plik JS (opcjonalnie) -->
   <script src="{% static 'js/script.js' %}"></script>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
