@@ -309,7 +309,7 @@ def upload_plan(request):
                 request,
                 "Niektóre MO są częściowo zaplanowane. Przejdź do edycji, aby zaplanować pozostałe sub-MO."
             )
-            return redirect("production_plan_view")  # Przekierowanie do widoku planu produkcji
+            return redirect("production_plan")  # Przekierowanie do widoku planu produkcji
 
         messages.success(request, "Plan produkcji został zapisany.")
         return redirect("upload_plan")
