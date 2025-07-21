@@ -60,7 +60,7 @@
       <div class="d-flex align-items-center">
         <a class="navbar-brand me-2" href="{% url 'index' %}">🏭 Panel Produkcji</a>
 
-        {% if user.is_authenticated and user.groups.filter(name="Produkcja").exists and request.session.workplace %}
+        {% if user.is_authenticated and user.groups.filter(name="Produkcja") and request.session.workplace %}
             <a class="btn btn-primary me-3" href="{% url 'daily_panel' request.session.workplace %}">📋 Daily Panel</a>
         {% endif %}
       </div>
@@ -68,7 +68,7 @@
       <div class="d-flex align-items-center text-white ms-auto">
         {% if user.is_authenticated %}
           <span class="me-3"><i class="bi bi-person-fill"></i> {{ user.username }}</span>
-          {% if user.is_authenticated and (user.groups.filter(name="Produkcja").exists or user.groups.filter(name="Lider").exists) and request.session.workplace %}
+          {% if user.is_authenticated and (user.groups.filter(name="Produkcja") or user.groups.filter(name="Lider") and request.session.workplace %}
             <span class="me-3">🏭 Miejsce pracy: <strong>{{ request.session.workplace|default:"Nie wybrano" }}</strong></span>
             <form action="{% url 'reset_workplace' %}" method="post" class="d-inline">          
               {% csrf_token %}
