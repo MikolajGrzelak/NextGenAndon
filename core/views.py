@@ -14,19 +14,19 @@ def index_view(request):
     """Dynamicznie zmienia wygląd strony index w zależności od roli użytkownika"""
     user = request.user
 
-    if user.groups.filter(name="Produkcja").exists():
+    if user.groups.filter(name="Produkcja")():
         role = "Produkcja"
         template = "index_production.html"
-    elif user.groups.filter(name="Lider").exists():
+    elif user.groups.filter(name="Lider")():
         role = "Lider"
         template = "index_leader.html"
-    elif user.groups.filter(name="Planista").exists():
+    elif user.groups.filter(name="Planista")():
         role = "Planista"
         template = "index_planner.html"
-    elif user.groups.filter(name="Manager").exists():
+    elif user.groups.filter(name="Manager")():
         role = "Manager"
         template = "index_default.html"
-    elif user.groups.filter(name="Magazyn").exists():
+    elif user.groups.filter(name="Magazyn")():
         role = "Magazyn"
         template = "index_warehouse.html"
     else:
@@ -63,7 +63,7 @@ def daily_panel(request, workplace):
     workplace = request.session.get("workplace", "Nieznane")
 
     if workplace == "Nieznane":
-        if request.user.is_superuser or request.user.groups.filter(name="Liderzy").exists():
+        if request.user.is_superuser or request.user.groups.filter(name="Liderzy")():
             workplace = "default_panel"  # Możesz zmienić na np. "admin_dashboard"
         else:
             messages.error(request, "⚠️ Nie przypisano miejsca pracy. Skontaktuj się z administratorem.")
@@ -1130,13 +1130,13 @@ def cycle_count_view(request):
 def check_scrap_code(request):
     """Sprawdza, czy wpisany kod scrapu istnieje w bazie"""
     scrap_code = request.GET.get("code", "").strip().upper()
-    exists = ScrapCode.objects.filter(code=scrap_code).exists()
+    exists = ScrapCode.objects.filter(code=scrap_code)()
     return JsonResponse({"exists": exists})
 
 def check_location(request):
     """Sprawdza, czy wpisana lokalizacja istnieje w bazie Location"""
     location_name = request.GET.get("location", "").strip().upper()
-    exists = Location.objects.filter(name=location_name).exists()
+    exists = Location.objects.filter(name=location_name)()
     return JsonResponse({"exists": exists})
 
 def autocomplete_item(request):
@@ -1330,7 +1330,7 @@ def inv_request_approve(request, req_id):
     # 1. Sprawdź, na jakim etapie jest wniosek
     if inv_req.status == "awaiting_magazyn":
         # Czy user jest w grupie 'Magazyn'?
-        if not request.user.groups.filter(name="Magazyn").exists():
+        if not request.user.groups.filter(name="Magazyn")():
             messages.error(request, "Brak uprawnień (Magazyn)!")
             return redirect("inv_request_list")
 
@@ -1340,7 +1340,7 @@ def inv_request_approve(request, req_id):
 
     elif inv_req.status == "awaiting_dyrektor":
         # Czy user jest w grupie 'Dyrektor'?
-        if not request.user.groups.filter(name="Dyrektor").exists():
+        if not request.user.groups.filter(name="Dyrektor")():
             messages.error(request, "Brak uprawnień (Dyrektor)!")
             return redirect("inv_request_list")
 
@@ -1350,7 +1350,7 @@ def inv_request_approve(request, req_id):
 
     elif inv_req.status == "awaiting_cycle":
         # Czy user jest w grupie 'CycleCount'?
-        if not request.user.groups.filter(name="CycleCount").exists():
+        if not request.user.groups.filter(name="CycleCount")():
             messages.error(request, "Brak uprawnień (CycleCount)!")
             return redirect("inv_request_list")
 
@@ -1385,9 +1385,9 @@ def inv_request_reject(request, req_id):
     # lub dozwolisz to tylko 'Magazyn' i 'Dyrektor'?
     # W prostym wariancie sprawdzamy, czy user jest w jakiejś z tych grup.
     if not (
-        request.user.groups.filter(name="Magazyn").exists() or
-        request.user.groups.filter(name="Dyrektor").exists() or
-        request.user.groups.filter(name="CycleCount").exists()
+        request.user.groups.filter(name="Magazyn")() or
+        request.user.groups.filter(name="Dyrektor")() or
+        request.user.groups.filter(name="CycleCount")()
     ):
         messages.error(request, "Brak uprawnień do odrzucenia!")
         return redirect("inv_request_list")
