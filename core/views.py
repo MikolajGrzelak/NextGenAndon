@@ -57,38 +57,45 @@ def index(request):
 def index_view(request):
     """Dynamicznie zmienia wygląd strony index w zależności od roli użytkownika"""
     user = request.user
+    # Pobierz nazwy grup, do których należy użytkownik
     group_names = list(user.groups.values_list("name", flat=True))
 
-    # Dodaj zmienne boolean do kontekstu
+    # Oblicz zmienne boolean na podstawie przynależności do grup
     is_produkcja = "Produkcja" in group_names
     is_lider = "Lider" in group_names
-    is_magazyn = "Magazyn" in group_names # Dodaj również is_magazyn jeśli jest używane w base.html w innych miejscach
+    is_planista = "Planista" in group_names # Dodaj dla kompletności
+    is_manager = "Manager" in group_names   # Dodaj dla kompletności
+    is_magazyn = "Magazyn" in group_names   # Dodaj dla kompletności
 
-    if is_produkcja: # Zmieniamy na zmienne boolean
+    # Ustal rolę i szablon do renderowania
+    if is_produkcja:
         role = "Produkcja"
         template = "index_production.html"
-    elif is_lider: # Zmieniamy na zmienne boolean
+    elif is_lider:
         role = "Lider"
         template = "index_leader.html"
-    elif "Planista" in group_names:
+    elif is_planista: # Użyj zmiennej boolean
         role = "Planista"
         template = "index_planner.html"
-    elif "Manager" in group_names:
+    elif is_manager: # Użyj zmiennej boolean
         role = "Manager"
         template = "index_default.html"
-    elif is_magazyn: # Zmieniamy na zmienne boolean
+    elif is_magazyn: # Użyj zmiennej boolean
         role = "Magazyn"
         template = "index_warehouse.html"
     else:
         role = "Nieznana rola"
         template = "index_default.html"
 
+    # Przekaż wszystkie niezbędne zmienne do kontekstu szablonu
     return render(request, template, {
         "role": role,
         "group_names": group_names,
-        "is_produkcja": is_produkcja,  # <-- Dodano
-        "is_lider": is_lider,          # <-- Dodano
-        "is_magazyn": is_magazyn,      # <-- Dodano, jeśli potrzebne
+        "is_produkcja": is_produkcja,
+        "is_lider": is_lider,
+        "is_planista": is_planista, # Dodano
+        "is_manager": is_manager,   # Dodano
+        "is_magazyn": is_magazyn,   # Dodano
     })
 
 @login_required
