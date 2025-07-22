@@ -60,7 +60,7 @@
       <div class="d-flex align-items-center">
         <a class="navbar-brand me-2" href="{% url 'index' %}">🏭 Panel Produkcji</a>
 
-        {% if user.is_authenticated and user.groups.filter(name="Produkcja") and request.session.workplace %}
+        {% if user.is_authenticated and 'Produkcja' in user.groups.values_list('name', flat=True) and request.session.workplace %}
             <a class="btn btn-primary me-3" href="{% url 'daily_panel' request.session.workplace %}">📋 Daily Panel</a>
         {% endif %}
       </div>
@@ -68,13 +68,18 @@
       <div class="d-flex align-items-center text-white ms-auto">
         {% if user.is_authenticated %}
           <span class="me-3"><i class="bi bi-person-fill"></i> {{ user.username }}</span>
-          {% if user.is_authenticated and (user.groups.filter(name="Produkcja") or user.groups.filter(name="Lider") and request.session.workplace %}
+
+          {% if request.session.workplace and (
+                'Produkcja' in user.groups.values_list('name', flat=True) or
+                'Lider' in user.groups.values_list('name', flat=True)
+              ) %}
             <span class="me-3">🏭 Miejsce pracy: <strong>{{ request.session.workplace|default:"Nie wybrano" }}</strong></span>
             <form action="{% url 'reset_workplace' %}" method="post" class="d-inline">          
               {% csrf_token %}
               <button type="submit" class="btn btn-warning me-2">Zmień miejsce</button>
             </form>
           {% endif %}
+
           <div class="notification-icon" style="position: relative;">
             <a href="#" id="notification-icon">
               <i class="bi bi-envelope"></i>
@@ -84,6 +89,7 @@
               <ul id="notification-list"></ul>
             </div>
           </div>
+
           <form action="{% url 'logout' %}" method="post" class="d-inline">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Wyloguj</button>
@@ -131,7 +137,6 @@
         const cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
           const cookie = cookies[i].trim();
-          // Does this cookie string begin with the name we want?
           if (cookie.substring(0, name.length + 1) === (name + '=')) {
             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
             break;
