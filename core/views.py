@@ -100,7 +100,6 @@ def daily_panel(request, workplace):
         "is_magazyn": is_magazyn,     # <-- Dodano, jeśli potrzebne
     })
 
-
 @login_required
 def index_production(request):
     return render(request, "index_production.html")
