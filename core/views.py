@@ -13,27 +13,32 @@ def index(request):
 def index_view(request):
     """Dynamicznie zmienia wygląd strony index w zależności od roli użytkownika"""
     user = request.user
+    group_names = list(user.groups.values_list("name", flat=True))  # <-- dodajemy to
 
-    if user.groups.filter(name="Produkcja").exists():
+    if "Produkcja" in group_names:
         role = "Produkcja"
         template = "index_production.html"
-    elif user.groups.filter(name="Lider").exists():
+    elif "Lider" in group_names:
         role = "Lider"
         template = "index_leader.html"
-    elif user.groups.filter(name="Planista").exists():
+    elif "Planista" in group_names:
         role = "Planista"
         template = "index_planner.html"
-    elif user.groups.filter(name="Manager").exists():
+    elif "Manager" in group_names:
         role = "Manager"
         template = "index_default.html"
-    elif user.groups.filter(name="Magazyn").exists():
+    elif "Magazyn" in group_names:
         role = "Magazyn"
         template = "index_warehouse.html"
     else:
         role = "Nieznana rola"
         template = "index_default.html"
 
-    return render(request, template, {"role": role})
+    return render(request, template, {
+        "role": role,
+        "group_names": group_names  # <-- przekazujemy do szablonu
+    })
+
 @login_required
 def production_c2(request):
     return render(request, "production_c2.html")
