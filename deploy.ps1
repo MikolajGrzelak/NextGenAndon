@@ -13,7 +13,7 @@ Write-Host "[3/5] Push do GitHuba..."
 git push
 
 Write-Host "[4/5] Łączenie z VM i pull + Docker build/up..."
-az ssh vm --ip 10.0.11.5 --command @"
+az ssh vm --ip 10.0.11.5 @"
 sudo git -C /docker/build-files/andon-signals pull
 cd /docker/compose-signals
 sudo docker compose build
