@@ -2,6 +2,50 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_exempt
+import pandas as pd
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
+from django.db.models.functions import TruncDate
+from django.utils import timezone
+from .models import (
+    SupportTicket, 
+    Item, 
+    QualityReason, 
+    C2MaterialItem, 
+    C2MaterialGroup, 
+    ScrapEntry, 
+    WarehouseRequest, 
+    WarehouseComment, 
+    WarehouseReason, 
+    ProductionLog, 
+    ProductionPlan, 
+    ProductionComment, 
+    ProductionOrder,
+    Location,
+    ScrapCode,
+    CycleCountRequest,
+    InvRequest,
+    InvRequestLine,
+    Notification
+)
+from django.core.paginator import Paginator
+from django.utils.dateparse import parse_date
+from django.utils.timezone import now, datetime, make_aware
+from .forms import ScrapEntry, CycleCountRequestForm, ExcelUploadForm
+from django.http import JsonResponse
+from datetime import timedelta, datetime
+from django.db.models import Sum, F, DecimalField, ExpressionWrapper, Max, Q, Count
+from django.contrib import messages
+import io
+import base64
+import json
+import matplotlib.pyplot as plt
+from decimal import Decimal
+from django.db import transaction
+from . import models
 
 
 @login_required
@@ -124,50 +168,7 @@ def warehouse_index(request):
     return render(request, "index_warehouse.html")
 
 
-import pandas as pd
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
-from django.core.exceptions import ValidationError
-from django.db.models.functions import TruncDate
-from django.utils import timezone
-from .models import (
-    SupportTicket, 
-    Item, 
-    QualityReason, 
-    C2MaterialItem, 
-    C2MaterialGroup, 
-    ScrapEntry, 
-    WarehouseRequest, 
-    WarehouseComment, 
-    WarehouseReason, 
-    ProductionLog, 
-    ProductionPlan, 
-    ProductionComment, 
-    ProductionOrder,
-    Location,
-    ScrapCode,
-    CycleCountRequest,
-    InvRequest,
-    InvRequestLine,
-    Notification
-)
-from django.core.paginator import Paginator
-from django.utils.dateparse import parse_date
-from django.utils.timezone import now, datetime, make_aware
-from .forms import ScrapEntry, CycleCountRequestForm, ExcelUploadForm
-from django.http import JsonResponse
-from datetime import timedelta, datetime
-from django.db.models import Sum, F, DecimalField, ExpressionWrapper, Max, Q, Count
-from django.contrib import messages
-import io
-import base64
-import json
-import matplotlib.pyplot as plt
-from decimal import Decimal
-from django.db import transaction
-from . import models
+
 
 TWO_DAYS_AGO = now() - timedelta(days=2)
 
