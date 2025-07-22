@@ -13,12 +13,17 @@ def index(request):
 def index_view(request):
     """Dynamicznie zmienia wygląd strony index w zależności od roli użytkownika"""
     user = request.user
-    group_names = list(user.groups.values_list("name", flat=True))  # <-- dodajemy to
+    group_names = list(user.groups.values_list("name", flat=True))
 
-    if "Produkcja" in group_names:
+    # Dodaj zmienne boolean do kontekstu
+    is_produkcja = "Produkcja" in group_names
+    is_lider = "Lider" in group_names
+    is_magazyn = "Magazyn" in group_names # Dodaj również is_magazyn jeśli jest używane w base.html w innych miejscach
+
+    if is_produkcja: # Zmieniamy na zmienne boolean
         role = "Produkcja"
         template = "index_production.html"
-    elif "Lider" in group_names:
+    elif is_lider: # Zmieniamy na zmienne boolean
         role = "Lider"
         template = "index_leader.html"
     elif "Planista" in group_names:
@@ -27,7 +32,7 @@ def index_view(request):
     elif "Manager" in group_names:
         role = "Manager"
         template = "index_default.html"
-    elif "Magazyn" in group_names:
+    elif is_magazyn: # Zmieniamy na zmienne boolean
         role = "Magazyn"
         template = "index_warehouse.html"
     else:
@@ -36,7 +41,10 @@ def index_view(request):
 
     return render(request, template, {
         "role": role,
-        "group_names": group_names  # <-- przekazujemy do szablonu
+        "group_names": group_names,
+        "is_produkcja": is_produkcja,  # <-- Dodano
+        "is_lider": is_lider,          # <-- Dodano
+        "is_magazyn": is_magazyn,      # <-- Dodano, jeśli potrzebne
     })
 
 @login_required
@@ -65,16 +73,33 @@ def production_comestero(request):
 
 @login_required
 def daily_panel(request, workplace):
+    # Pobierz miejsce pracy z sesji lub ustaw domyślne
     workplace = request.session.get("workplace", "Nieznane")
 
+    # Pobierz grupy użytkownika, aby określić role
+    user = request.user
+    group_names = list(user.groups.values_list("name", flat=True))
+
+    # Określ, czy użytkownik jest w grupie "Produkcja" lub "Lider"
+    is_produkcja = "Produkcja" in group_names
+    is_lider = "Lider" in group_names
+    is_magazyn = "Magazyn" in group_names # Dodano, jeśli potrzebne
+
     if workplace == "Nieznane":
-        if request.user.is_superuser or request.user.groups.filter(name="Liderzy").exists():
-            workplace = "default_panel"  # Możesz zmienić na np. "admin_dashboard"
+        # Logika dla nieprzypisanego miejsca pracy
+        if request.user.is_superuser or is_lider: # Możesz tutaj użyć is_lider
+            workplace = "default_panel"
         else:
             messages.error(request, "⚠️ Nie przypisano miejsca pracy. Skontaktuj się z administratorem.")
-            return redirect("index")  # Zmień na odpowiedni widok
+            return redirect("index")
 
-    return render(request, "daily_panel.html", {"workplace": workplace})
+    return render(request, "daily_panel.html", {
+        "workplace": workplace,
+        "is_produkcja": is_produkcja, # <-- Dodano
+        "is_lider": is_lider,         # <-- Dodano
+        "is_magazyn": is_magazyn,     # <-- Dodano, jeśli potrzebne
+    })
+
 
 @login_required
 def index_production(request):
