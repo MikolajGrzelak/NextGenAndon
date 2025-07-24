@@ -1,63 +1,78 @@
 {% extends "base.html" %}
+{% block title %}WGRAJ PLAN PRODUKCJI{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>📋 Wgraj Plan Produkcji</h2>
-
-    <!-- Wizualna wskazówka - jak powinien wyglądać plik Excel -->
-    <div class="alert alert-info">
-        <p>Twój plik Excel powinien zawierać następujące kolumny:</p>
-        <table class="table table-bordered bg-white">
-            <thead>
-                <tr>
-                    <th>MO Number</th>
-                    <th>Planned Date</th>
-                    <th>Planned Week</th>
-                    <th>Planned Quantity</th>
-                    <th>Planned Percentage</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>MO12345</td>
-                    <td>2025-02-20</td>
-                    <td></td>
-                    <td>100</td>
-                    <td>100</td>
-                </tr>
-                <tr>
-                    <td>MO12346</td>
-                    <td></td>
-                    <td>8</td>
-                    <td>200</td>
-                    <td>50</td>
-                </tr>
-            </tbody>
-        </table>
-        <p>Wskazówki:</p>
-        <ul>
-            <li><strong>MO Number</strong>: Numer zlecenia (musi istnieć już w bazie statusów).</li>
-            <li><strong>Planned Date</strong>: Data, na którą planujesz produkcję (format YYYY-MM-DD). Używane dla linii <code>C2</code> i <code>RM5</code>.</li>
-            <li><strong>Planned Week</strong>: Tydzień roku, na który planujesz produkcję (wartość od 1 do 53). Używane dla innych linii produkcyjnych.</li>
-            <li><strong>Planned Quantity</strong>: Ilość zaplanowana dla danego MO lub sub-MO.</li>
-            <li><strong>Planned Percentage</strong>: Procent realizacji dla zaplanowanej ilości (wartość od 0 do 100). Jeśli puste, domyślnie 100%.</li>
-        </ul>
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-cloud-upload-fill"></i> WGRAJ PLAN PRODUKCJI</h1>
+        <p class="text-light-color">ZAŁADUJ PLIK EXCEL (.XLSX) Z HARMONOGRAMEM PRODUKCJI</p>
     </div>
 
-    {% if messages %}
-    <div class="alert alert-info">
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-    {% endif %}
+    <div class="row gx-5">
+        <!-- Lewa kolumna: Formularz do wgrywania -->
+        <div class="col-lg-7">
+            <h3 class="mb-4">KROK 2: WYBIERZ I WGRAJ PLIK</h3>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="cyber-alert cyber-alert-info mb-4">
+                        <p class="m-0">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="file" class="form-label">Plik (.xlsx):</label>
-            <input type="file" id="file" name="file" class="form-control" required>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="file" class="form-label">PLIK Z PLANEM (.XLSX):</label>
+                    <div class="custom-file-input">
+                        <input type="file" id="file" name="file" class="d-none" required accept=".xlsx">
+                        <label for="file" class="btn-cyber-outline">
+                            <i class="bi bi-file-earmark-arrow-up"></i> WYBIERZ PLIK
+                        </label>
+                        <span id="file-chosen" class="text-light-color ms-3">Nie wybrano pliku</span>
+                    </div>
+                </div>
+                <div class="d-grid mt-5">
+                    <button type="submit" class="btn-cyber btn-success">WGRAJ I PRZETWÓRZ PLAN</button>
+                </div>
+            </form>
         </div>
-        <button type="submit" class="btn btn-success">📤 Wgraj Plan</button>
-    </form>
+
+        <!-- Prawa kolumna: Instrukcje -->
+        <div class="col-lg-5 mt-5 mt-lg-0">
+            <div class="cyber-card h-100">
+                <h4 class="mb-3">KROK 1: PRZYGOTUJ PLIK</h4>
+                <p class="text-light-color">Plik Excel musi zawierać następujące kolumny:</p>
+                <div class="table-responsive">
+                    <table class="table-cyber">
+                        <thead>
+                            <tr>
+                                <th>MO Number</th>
+                                <th>Planned Date</th>
+                                <th>Planned Week</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <ul class="instruction-list mt-3">
+                    <li><strong>MO Number</strong>: Numer zlecenia (musi istnieć w bazie).</li>
+                    <li><strong>Planned Date</strong>: Data w formacie YYYY-MM-DD (dla linii C2 i RM5).</li>
+                    <li><strong>Planned Week</strong>: Tydzień roku (1-53) dla pozostałych linii.</li>
+                    <li><strong>Planned Quantity</strong>: Ilość (opcjonalnie).</li>
+                    <li><strong>Planned Percentage</strong>: Procent (opcjonalnie).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.getElementById('file').addEventListener('change', function(){
+      const fileName = this.files[0] ? this.files[0].name : 'Nie wybrano pliku';
+      document.getElementById('file-chosen').textContent = fileName;
+    });
+</script>
 {% endblock %}

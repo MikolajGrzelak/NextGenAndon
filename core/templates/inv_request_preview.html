@@ -1,41 +1,59 @@
-<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\inv_request_preview.html -->
 {% extends "base.html" %}
-{% block content %}
-<div class="container mt-4">
-  <h2>Podgląd Wniosku Inwentaryzacyjnego</h2>
-  <p class="text-muted">Sprawdź dane przed złożeniem wniosku.</p>
+{% block title %}PODGLĄD WNIOSKU INWENTARYZACYJNEGO{% endblock %}
 
-  <form method="POST" action="{% url 'inv_request_submit' %}">
-    {% csrf_token %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Kod Itemu</th>
-          <th>Ilość</th>
-          <th>Lokalizacja</th>
-          <th>Kod Scrapu</th>
-          <th>Cena</th>
-          <th>Wartość</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for data in preview_data %}
-        <tr>
-          <td>{{ data.item_code }}</td>
-          <td>{{ data.quantity }}</td>
-          <td>{{ data.location }}</td>
-          <td>{{ data.scrap_code }}</td>
-          <td>{{ data.price|floatformat:2 }} PLN</td>
-          <td>{{ data.value|floatformat:2 }} PLN</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <div class="text-right">
-      <strong>Łączna wartość wniosku: {{ total_value|floatformat:2 }} PLN</strong>
+{% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-eye-fill"></i> PODGLĄD WNIOSKU INWENTARYZACYJNEGO</h1>
+        <p class="text-light-color">Sprawdź poprawność danych przed ostatecznym zatwierdzeniem.</p>
     </div>
-    <button type="submit" class="btn btn-primary">Zatwierdź Wniosek</button>
-    <a href="javascript:history.back()" class="btn btn-secondary">Wróć</a>
-  </form>
+
+    <form method="POST" action="{% url 'inv_request_submit' %}">
+        {% csrf_token %}
+        
+        <!-- Tabela z pozycjami wniosku -->
+        <h3 class="mb-4">POZYCJE DO ZATWIERDZENIA</h3>
+        <div class="table-responsive">
+            <table class="table-cyber">
+                <thead>
+                    <tr>
+                        <th>KOMPONENT</th>
+                        <th class="text-center">ILOŚĆ</th>
+                        <th>LOKALIZACJA</th>
+                        <th class="text-center">KOD ODPADU</th>
+                        <th class="text-end">CENA JEDN.</th>
+                        <th class="text-end">WARTOŚĆ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in preview_data %}
+                    <tr>
+                        <td>
+                            {{ data.item_code }}
+                            <br>
+                            <small class="text-light-color">{{ data.item.description|truncatewords:10 }}</small>
+                        </td>
+                        <td class="text-center fw-bold {% if data.quantity < 0 %}text-danger{% else %}text-success{% endif %}">{{ data.quantity }}</td>
+                        <td>{{ data.location }}</td>
+                        <td class="text-center">{{ data.scrap_code }}</td>
+                        <td class="text-end">{{ data.price|floatformat:2 }} PLN</td>
+                        <td class="text-end">{{ data.value|floatformat:2 }} PLN</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-summary-row">
+                        <td colspan="5" class="text-end fw-bold">ŁĄCZNA WARTOŚĆ WNIOSKU:</td>
+                        <td class="text-end h5 m-0" style="color: var(--secondary-color);">{{ total_value|floatformat:2 }} PLN</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 mt-5">
+            <a href="javascript:history.back()" class="btn-cyber-outline">POWRÓT I KOREKTA</a>
+            <button type="submit" class="btn-cyber btn-success">ZATWIERDŹ I WYŚLIJ WNIOSEK</button>
+        </div>
+    </form>
 </div>
 {% endblock %}

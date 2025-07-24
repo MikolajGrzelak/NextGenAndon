@@ -1,47 +1,51 @@
 {% extends "base.html" %}
-{% block content %}
+{% block title %}WEZWANIE: MAGAZYN{% endblock %}
 
-<div class="container mt-5">
-    <h2 class="mb-4">📦 Zgłoszenie do magazynu</h2>
+{% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-box-seam"></i> ZGŁOSZENIE DO MAGAZYNU</h1>
+        <p class="text-light-color">SYSTEM ZGŁOSZEŃ LOGISTYCZNYCH</p>
+    </div>
 
     <form method="POST" action="{% url 'call_warehouse' %}">
         {% csrf_token %}
+        <div class="row gx-5">
+            <!-- Lewa kolumna: Formularz -->
+            <div class="col-lg-7">
+                <div class="mb-4">
+                    <label for="location" class="form-label">LOKALIZACJA ZGŁASZAJĄCA:</label>
+                    <select id="location" name="location" class="form-control-cyber" required>
+                        <option value="" selected disabled>Wybierz lokalizację...</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="c2">C2</option>
+                        <option value="rm5">RM5</option>
+                        <option value="scancoin">ScanCoin</option>
+                        <option value="comestero">Comestero</option>
+                        <option value="b2b">B2B</option>
+                    </select>
+                </div>
 
-        <div class="row">
-            <!-- Lewa strona: Formularz -->
-            <div class="mb-3">
-                <label for="location" class="form-label">📍 Lokalizacja:</label>
-                <select id="location" name="location" class="form-select" required>
-                    <option value="" selected disabled>Wybierz lokalizację...</option>
-                    <option value="gaming">🎮 Gaming</option>
-                    <option value="c2">⚙️ C2</option>
-                    <option value="rm5">🏭 RM5</option>
-                    <option value="scancoin">💰 ScanCoin</option>
-                    <option value="comestero">💳 Comestero</option>
-                    <option value="b2b">📦 B2B</option>
-                </select>
-            </div>
-            <div class="col-md-8">
-                <div class="mb-3">
-                    <label for="item_code" class="form-label">📦 Wybierz item:</label>
-                    <input type="text" id="item_code" name="item_code" class="form-control" required>
+                <div class="mb-4 position-relative">
+                    <label for="item_code" class="form-label">KOD KOMPONENTU:</label>
+                    <input type="text" id="item_code" name="item_code" class="form-control-cyber" required autocomplete="off">
                     <div id="suggestions" class="suggestions-box"></div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="quantity" class="form-label">🔢 Ilość:</label>
+                <div class="mb-4">
+                    <label for="quantity" class="form-label">WYMAGANA ILOŚĆ:</label>
                     <div class="input-group">
-                        <input type="number" id="quantity" name="quantity" class="form-control" required>
-                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="1">1 szt</button>
-                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="3">3 szt</button>
-                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="5">5 szt</button>
-                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="10">10 szt</button>
+                        <input type="number" id="quantity" name="quantity" class="form-control-cyber" required>
+                        <button type="button" class="btn-cyber-outline quantity-btn" data-value="1">1</button>
+                        <button type="button" class="btn-cyber-outline quantity-btn" data-value="3">3</button>
+                        <button type="button" class="btn-cyber-outline quantity-btn" data-value="5">5</button>
+                        <button type="button" class="btn-cyber-outline quantity-btn" data-value="10">10</button>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="warehouse_reason" class="form-label">📦 Powód zgłoszenia:</label>
-                    <select id="warehouse_reason" name="warehouse_reason" class="form-select" required>
+                <div class="mb-4">
+                    <label for="warehouse_reason" class="form-label">POWÓD ZGŁOSZENIA:</label>
+                    <select id="warehouse_reason" name="warehouse_reason" class="form-control-cyber" required>
                         <option value="" selected disabled>Wybierz powód...</option>
                         {% for reason in warehouse_reasons %}
                             <option value="{{ reason.id }}">{{ reason.name }}</option>
@@ -49,35 +53,45 @@
                     </select>
                 </div>
 
-                <div class="mb-3">
-                    <label for="description" class="form-label">📝 Opis problemu:</label>
-                    <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+                <div class="mb-4">
+                    <label for="description" class="form-label">DODATKOWY OPIS:</label>
+                    <textarea id="description" name="description" class="form-control-cyber" rows="3" required></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-3">📦 Wyślij zgłoszenie</button>
-                <a href="{% url 'warehouse_tickets' %}" class="btn btn-secondary mt-3">🔙 Powrót do tablicy zgłoszeń</a>
+                <div class="d-flex gap-3 mt-5">
+                    <button type="submit" class="btn-cyber flex-grow-1">WYŚLIJ ZGŁOSZENIE</button>
+                    <a href="{% url 'warehouse_tickets' %}" class="btn-cyber-outline">POWRÓT</a>
+                </div>
+            </div>
+
+            <!-- Prawa kolumna: Informacje o itemie -->
+            <div class="col-lg-5">
+                 <div id="item-info" class="item-info-card" style="display: none;">
+                    <h4 class="item-info-header"><i class="bi bi-file-earmark-text"></i> DANE KOMPONENTU</h4>
+                    <div class="item-info-body">
+                        <p><strong>OPIS:</strong> <span id="item-description"></span></p>
+                        <p><strong>GPG:</strong> <span id="item-gpg"></span></p>
+                        <p><strong>CENA:</strong> <span id="item-price"></span></p>
+                        <p><strong>DOSTAWCA:</strong> <span id="item-supplier"></span></p>
+                        <p><strong>ODPOWIEDZIALNY:</strong> <span id="item-responsible"></span></p>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
-
-    <!-- Informacje o itemie -->
-    <div id="item-info" class="alert alert-info mt-4" style="display: none;">
-        <h5>📋 Informacje o itemie:</h5>
-        <p><strong>Opis:</strong> <span id="item-description"></span></p>
-        <p><strong>GPG:</strong> <span id="item-gpg"></span></p>
-        <p><strong>Cena:</strong> <span id="item-price"></span></p>
-        <p><strong>Dostawca:</strong> <span id="item-supplier"></span></p>
-        <p><strong>Odpowiedzialny:</strong> <span id="item-responsible"></span></p>
-    </div>
 </div>
+{% endblock %}
 
+{% block extra_scripts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        // Klikanie przycisków ilości
         $(".quantity-btn").click(function() {
-            $("#quantity").val($(this).data("value"));
+            $("#quantity").val($(this).data("value")).trigger('input');
         });
 
+        // Autouzupełnianie
         $("#item_code").on("input", function() {
             var query = $(this).val();
             if (query.length >= 1) {
@@ -87,53 +101,49 @@
                     dataType: "json",
                     success: function(data) {
                         var suggestions = $("#suggestions");
-                        suggestions.empty();
+                        suggestions.empty().show();
                         $.each(data.items, function(index, item) {
                             suggestions.append("<div class='suggestion-item' data-code='" + item.code + "'>" + item.code + " - " + item.description + "</div>");
                         });
                     }
                 });
             } else {
-                $("#suggestions").empty();
+                $("#suggestions").empty().hide();
+                $("#item-info").hide();
             }
         });
 
+        // Wybór sugestii i pobranie szczegółów
         $(document).on("click", ".suggestion-item", function() {
-            $("#item_code").val($(this).data("code"));
-            $("#suggestions").empty();
+            var itemCode = $(this).data("code");
+            $("#item_code").val(itemCode);
+            $("#suggestions").empty().hide();
             
             $.ajax({
                 url: "{% url 'get_item_details' %}",
-                data: { "item_code": $(this).data("code") },
+                data: { "item_code": itemCode },
                 dataType: "json",
                 success: function(data) {
-                    $("#item-description").text(data.description);
-                    $("#item-gpg").text(data.gpg);
-                    $("#item-price").text(data.price);
-                    $("#item-supplier").text(data.supplier);
-                    $("#item-responsible").text(data.responsible);
+                    if (data.error) {
+                        $("#item-info").hide();
+                        return;
+                    }
+                    $("#item-description").text(data.description || 'Brak danych');
+                    $("#item-gpg").text(data.gpg || 'Brak danych');
+                    $("#item-price").text(data.price || 'Brak danych');
+                    $("#item-supplier").text(data.supplier || 'Brak danych');
+                    $("#item-responsible").text(data.responsible || 'Brak danych');
                     $("#item-info").show();
                 }
             });
         });
+
+        // Ukrywanie sugestii po kliknięciu poza polem
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.position-relative').length) {
+                $('#suggestions').hide();
+            }
+        });
     });
 </script>
-
-<style>
-    .suggestions-box {
-        border: 1px solid #ccc;
-        background: white;
-        position: absolute;
-        width: 100%;
-        z-index: 1000;
-    }
-    .suggestion-item {
-        padding: 5px;
-        cursor: pointer;
-    }
-    .suggestion-item:hover {
-        background: #f0f0f0;
-    }
-</style>
-
 {% endblock %}

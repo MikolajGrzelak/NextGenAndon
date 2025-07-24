@@ -1,33 +1,66 @@
 {% extends "base.html" %}
+{% block title %}SZCZEGÓŁY WNIOSKU #{{ inv_req.id }}{% endblock %}
+
 {% block content %}
-<h2>Wniosek #{{ inv_req.id }}</h2>
-<p>Status: {{ inv_req.get_status_display }}</p>
-<p>Data utworzenia: {{ inv_req.created_at }}</p>
-<p>Utworzone przez: {{ inv_req.created_by }}</p>
+<div class="cyber-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-file-earmark-text-fill"></i> WNIOSEK INWENTARYZACYJNY #{{ inv_req.id }}</h1>
+            <p class="text-light-color m-0">SZCZEGÓŁY ZGŁOSZENIA</p>
+        </div>
+        <a href="{% url 'inv_request_list' %}" class="btn-cyber-outline">POWRÓT DO LISTY</a>
+    </div>
 
-<h3>Pozycje:</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Item</th>
-            <th>Ilość</th>
-            <th>Lokalizacja</th>
-            <th>Scrap Code</th>
-            <th>Wartość</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for line in inv_req.lines.all %}
-        <tr>
-            <td>{{ line.item.item_code }} - {{ line.item.description }}</td>
-            <td>{{ line.quantity }}</td>
-            <td>{{ line.location.name }}</td>
-            <td>{{ line.scrap_code.code }}</td>
-            <td>{{ line.line_value|floatformat:2 }} PLN</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-<h4>Łączna wartość: {{ inv_req.total_value|floatformat:2 }} PLN</h4>
+    <!-- Karta z podsumowaniem wniosku -->
+    <div class="cyber-card mb-5">
+        <div class="row">
+            <div class="col-md-4">
+                <p><strong>STATUS:</strong><br><span class="status-badge status-{{ inv_req.status|lower }}">{{ inv_req.get_status_display }}</span></p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>UTWORZONY PRZEZ:</strong><br>{{ inv_req.created_by.username }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>DATA UTWORZENIA:</strong><br>{{ inv_req.created_at|date:"Y-m-d H:i" }}</p>
+            </div>
+        </div>
+    </div>
 
+    <!-- Tabela z pozycjami wniosku -->
+    <h3 class="mb-4">POZYCJE WNIOSKU</h3>
+    <div class="table-responsive">
+        <table class="table-cyber">
+            <thead>
+                <tr>
+                    <th>KOMPONENT</th>
+                    <th class="text-center">ILOŚĆ</th>
+                    <th>LOKALIZACJA</th>
+                    <th class="text-center">KOD ODPADU</th>
+                    <th class="text-end">WARTOŚĆ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for line in inv_req.lines.all %}
+                <tr>
+                    <td>
+                        {{ line.item.item_code }}
+                        <br>
+                        <small class="text-light-color">{{ line.item.description|truncatewords:10 }}</small>
+                    </td>
+                    <td class="text-center fw-bold {% if line.quantity < 0 %}text-danger{% else %}text-success{% endif %}">{{ line.quantity }}</td>
+                    <td>{{ line.location.name }}</td>
+                    <td class="text-center">{{ line.scrap_code.code }}</td>
+                    <td class="text-end">{{ line.line_value|floatformat:2 }} PLN</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="table-summary-row">
+                    <td colspan="4" class="text-end fw-bold">ŁĄCZNA WARTOŚĆ WNIOSKU:</td>
+                    <td class="text-end h5 m-0" style="color: var(--secondary-color);">{{ inv_req.total_value|floatformat:2 }} PLN</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
 {% endblock %}

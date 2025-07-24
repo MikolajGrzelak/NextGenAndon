@@ -1,141 +1,182 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}RAPORT: CYCLE COUNT{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>📊 Raport Cycle Count</h2>
-
-    <!-- Formularz filtrowania -->
-    <form method="get" class="row g-3 mb-4">
-        <div class="col-md-3">
-            <label for="start_date" class="form-label">Data od:</label>
-            <input type="date" name="start_date" id="start_date" value="{{ start_date_str }}" class="form-control">
-        </div>
-        <div class="col-md-3">
-            <label for="end_date" class="form-label">Data do:</label>
-            <input type="date" name="end_date" id="end_date" value="{{ end_date_str }}" class="form-control">
-        </div>
-        <div class="col-md-3">
-            <label for="status_filter" class="form-label">Status:</label>
-            <select name="status" id="status_filter" class="form-select">
-                <option value="">-- Wszystkie --</option>
-                <option value="new" {% if status_filter == "new" %}selected{% endif %}>Nowe</option>
-                <option value="review" {% if status_filter == "review" %}selected{% endif %}>W trakcie</option>
-                <option value="closed" {% if status_filter == "closed" %}selected{% endif %}>Zakończone</option>
-                <option value="removed" {% if status_filter == "removed" %}selected{% endif %}>Usunięte</option>
-            </select>
-        </div>
-        <div class="col-md-3 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">🔍 Filtruj</button>
-        </div>
-    </form>
-
-    <!-- Podsumowanie główne -->
-    <div class="mb-3">
-        <p>🔢 Liczba zgłoszeń: <strong>{{ requests_count }}</strong></p>
-        <p>💰 Łączna wartość: <strong>{{ total_value|floatformat:2 }} PLN</strong></p>
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-clipboard-data"></i> RAPORT CYCLE COUNT</h1>
+        <p class="text-light-color">ANALIZA ZGŁOSZEŃ INWENTARYZACYJNYCH</p>
     </div>
 
-    <!-- Tabela statusów (opcjonalnie) -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Liczba</th>
-                    </tr>
-                </thead>
+    <!-- Formularz filtrowania -->
+    <div class="cyber-card mb-5">
+        <h4 class="mb-4">OPCJE FILTROWANIA</h4>
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="start_date" class="form-label">Data od:</label>
+                <input type="date" name="start_date" id="start_date" value="{{ start_date_str }}" class="form-control-cyber">
+            </div>
+            <div class="col-md-4">
+                <label for="end_date" class="form-label">Data do:</label>
+                <input type="date" name="end_date" id="end_date" value="{{ end_date_str }}" class="form-control-cyber">
+            </div>
+            <div class="col-md-4">
+                <label for="status_filter" class="form-label">Status:</label>
+                <select name="status" id="status_filter" class="form-control-cyber">
+                    <option value="">-- Wszystkie --</option>
+                    <option value="new" {% if status_filter == "new" %}selected{% endif %}>Nowe</option>
+                    <option value="review" {% if status_filter == "review" %}selected{% endif %}>W trakcie</option>
+                    <option value="closed" {% if status_filter == "closed" %}selected{% endif %}>Zakończone</option>
+                    <option value="removed" {% if status_filter == "removed" %}selected{% endif %}>Usunięte</option>
+                </select>
+            </div>
+            <div class="col-12 d-flex justify-content-end mt-4">
+                <button type="submit" class="btn-cyber">FILTRUJ DANE</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Podsumowanie główne w kartach -->
+    <div class="cyber-grid-container mb-5">
+        <div class="cyber-card text-center">
+            <h3>LICZBA ZGŁOSZEŃ</h3>
+            <p class="h1 text-light-color">{{ requests_count }}</p>
+        </div>
+        <div class="cyber-card text-center">
+            <h3>ŁĄCZNA WARTOŚĆ</h3>
+            <p class="h1" style="color: var(--secondary-color);">{{ total_value|floatformat:2 }} PLN</p>
+        </div>
+        <div class="cyber-card">
+            <table class="table-cyber">
                 <tbody>
-                    <tr>
-                        <td>Nowe</td>
-                        <td>{{ new_count }}</td>
-                    </tr>
-                    <tr>
-                        <td>W trakcie</td>
-                        <td>{{ review_count }}</td>
-                    </tr>
-                    <tr>
-                        <td>Zakończone</td>
-                        <td>{{ closed_count }}</td>
-                    </tr>
-                    <tr>
-                        <td>Usunięte</td>
-                        <td>{{ removed_count }}</td>
-                    </tr>
+                    <tr><td>Nowe</td><td class="text-end">{{ new_count }}</td></tr>
+                    <tr><td>W trakcie</td><td class="text-end">{{ review_count }}</td></tr>
+                    <tr><td>Zakończone</td><td class="text-end">{{ closed_count }}</td></tr>
+                    <tr><td>Usunięte</td><td class="text-end">{{ removed_count }}</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Dwa wykresy: Liczba ticketów vs Data, oraz Wartość ticketów vs Data -->
-    <div class="row">
-        <div class="col-md-6">
-            <h5>📈 Liczba ticketów (dziennie)</h5>
-            <canvas id="ticketsChart"></canvas>
+    <!-- Wykresy w kartach -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="cyber-card">
+                <h4 class="mb-3 text-center">LICZBA ZGŁOSZEŃ (DZIENNIE)</h4>
+                <canvas id="ticketsChart"></canvas>
+            </div>
         </div>
-        <div class="col-md-6">
-            <h5>💰 Wartość ticketów (dziennie)</h5>
-            <canvas id="valuesChart"></canvas>
+        <div class="col-lg-6">
+            <div class="cyber-card">
+                <h4 class="mb-3 text-center">WARTOŚĆ ZGŁOSZEŃ (DZIENNIE)</h4>
+                <canvas id="valuesChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_scripts %}
 <!-- Wykres Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Bezpieczne przekazanie danych z Django do JS -->
+{{ chart_dates|json_script:"chart-dates-data" }}
+{{ chart_counts|json_script:"chart-counts-data" }}
+{{ chart_values|json_script:"chart-values-data" }}
+
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Odczytujemy tablice z widoku
-    let chartDates  = JSON.parse('{{ chart_dates|safe|escapejs }}');   // np. ["2025-03-01", "2025-03-02"]
-    let chartCounts = JSON.parse('{{ chart_counts|safe|escapejs }}'); // np. [3, 5]
-    let chartValues = JSON.parse('{{ chart_values|safe|escapejs }}'); // np. [100.5, 200.3]
+    // Odczytujemy dane z bezpiecznych tagów skryptu
+    const chartDates  = JSON.parse(document.getElementById('chart-dates-data').textContent);
+    const chartCounts = JSON.parse(document.getElementById('chart-counts-data').textContent);
+    const chartValues = JSON.parse(document.getElementById('chart-values-data').textContent);
 
-    // 1) Wykres Liczby Ticketów
-    let ctxTickets = document.getElementById("ticketsChart").getContext("2d");
+    // === Konfiguracja stylów dla ciemnego motywu ===
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#f8f9fa' // Jasny tekst dla legendy
+                }
+            },
+            tooltip: {
+                backgroundColor: '#212529',
+                titleColor: '#f8f9fa',
+                bodyColor: '#adb5bd',
+                borderColor: '#495057',
+                borderWidth: 1
+            }
+        },
+        scales: {
+            x: {
+                title: { display: true, text: 'DATA', color: '#adb5bd' },
+                ticks: { color: '#adb5bd' },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            },
+            y: {
+                beginAtZero: true,
+                title: { display: true, text: 'WARTOŚĆ', color: '#adb5bd' },
+                ticks: { color: '#adb5bd' },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            }
+        }
+    };
+
+    // 1) Wykres Liczby Zgłoszeń
+    const ctxTickets = document.getElementById("ticketsChart").getContext("2d");
     new Chart(ctxTickets, {
-        type: 'line',  // "line" do wykresu liniowego
+        type: 'line',
         data: {
             labels: chartDates,
             datasets: [{
-                label: 'Ilość Ticketów',
+                label: 'Liczba Zgłoszeń',
                 data: chartCounts,
-                borderColor: '#f39c12',
-                backgroundColor: 'rgba(243,156,18,0.2)',
+                borderColor: '#ff6a00', // Kolor pomarańczowy
+                backgroundColor: 'rgba(255, 106, 0, 0.2)',
                 fill: true,
-                tension: 0.1
+                tension: 0.3,
+                pointBackgroundColor: '#ff6a00',
+                pointBorderColor: '#ffffff'
             }]
         },
         options: {
+            ...chartOptions,
             scales: {
-                x: { title: { display: true, text: 'Data' } },
-                y: { beginAtZero: true, title: { display: true, text: 'Liczba ticketów' } }
+                ...chartOptions.scales,
+                y: { ...chartOptions.scales.y, title: { display: true, text: 'LICZBA ZGŁOSZEŃ', color: '#adb5bd' } }
             }
         }
     });
 
-    // 2) Wykres Wartości Ticketów
-    let ctxValues = document.getElementById("valuesChart").getContext("2d");
+    // 2) Wykres Wartości Zgłoszeń
+    const ctxValues = document.getElementById("valuesChart").getContext("2d");
     new Chart(ctxValues, {
         type: 'line',
         data: {
             labels: chartDates,
             datasets: [{
-                label: 'Wartość Ticketów (PLN)',
+                label: 'Wartość Zgłoszeń (PLN)',
                 data: chartValues,
-                borderColor: '#3498db',
-                backgroundColor: 'rgba(52,152,219,0.2)',
+                borderColor: '#007bff', // Kolor niebieski
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
                 fill: true,
-                tension: 0.1
+                tension: 0.3,
+                pointBackgroundColor: '#007bff',
+                pointBorderColor: '#ffffff'
             }]
         },
         options: {
+            ...chartOptions,
             scales: {
-                x: { title: { display: true, text: 'Data' } },
-                y: { beginAtZero: true, title: { display: true, text: 'Wartość' } }
+                ...chartOptions.scales,
+                y: { ...chartOptions.scales.y, title: { display: true, text: 'WARTOŚĆ (PLN)', color: '#adb5bd' } }
             }
         }
     });
-
 });
 </script>
-
 {% endblock %}

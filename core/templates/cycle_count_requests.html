@@ -1,222 +1,168 @@
 {% extends "base.html" %}
-{% block content %}
+{% block title %}ZGŁOSZENIA INWENTARYZACYJNE{% endblock %}
 
-<div class="container mt-4">
-    <h2>📋 Zgłoszenia o przeliczenie stanów</h2>
+{% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-person-check"></i> NOWE ZGŁOSZENIE INWENTARYZACYJNE</h1>
+        <p class="text-light-color">FORMULARZ PRZELICZENIA STANÓW MAGAZYNOWYCH</p>
+    </div>
 
     <form method="post">
         {% csrf_token %}
-
-        <div class="row">
-            <!-- Lewa część formularza -->
-            <div class="col-md-6">
-
-                <!-- Pole do wpisywania kodu Item (z autouzupełnieniem) -->
-                <div class="mb-3 position-relative">
-                    <label for="item_code" class="form-label">🆔 Item:</label>
-                    <input type="text" id="item_code" name="item_code" class="form-control" required autocomplete="off">
-                    <!-- Kontener dla sugestii itemu -->
-                    <div id="item_suggestions" class="item-suggestions-box"></div>
+        <div class="row gx-5">
+            <div class="col-lg-7">
+                <div class="row g-4">
+                    <div class="col-md-6 position-relative">
+                        <label for="item_code" class="form-label">KOD KOMPONENTU:</label>
+                        <input type="text" id="item_code" name="item_code" class="form-control-cyber" required autocomplete="off">
+                        <div id="item_suggestions" class="suggestions-box"></div>
+                    </div>
+                    <div class="col-md-6 position-relative">
+                        <label for="location_input" class="form-label">LOKALIZACJA:</label>
+                        <input type="text" id="location_input" name="location_name" class="form-control-cyber" autocomplete="off" required>
+                        <div id="location_suggestions" class="suggestions-box"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">ILOŚĆ SYSTEMOWA:</label>
+                        <input type="number" name="system_qty" class="form-control-cyber" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">ILOŚĆ FIZYCZNA:</label>
+                        <input type="number" name="physical_qty" class="form-control-cyber" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">KOMENTARZ (OPCJONALNIE):</label>
+                        <textarea name="comment" rows="4" class="form-control-cyber"></textarea>
+                    </div>
+                    <div class="col-12 d-grid">
+                        <button type="submit" class="btn-cyber btn-success">DODAJ ZGŁOSZENIE</button>
+                    </div>
                 </div>
-
-                <!-- Pole do wpisywania nazwy Lokalizacji (z autouzupełnieniem) -->
-                <div class="mb-3 position-relative">
-                    <label for="location_input" class="form-label">🌐 Lokalizacja:</label>
-                    <input type="text" id="location_input" name="location_name" class="form-control" autocomplete="off">
-                    <!-- Kontener dla sugestii lokalizacji -->
-                    <div id="location_suggestions" class="location-suggestions-box"></div>
-                </div>
-
-                <!-- Ilość systemowa, fizyczna, komentarz -->
-                <div class="mb-3">
-                    <label class="form-label">Ilość systemowa:</label>
-                    <input type="number" name="system_qty" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Ilość fizyczna:</label>
-                    <input type="number" name="physical_qty" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Komentarz:</label>
-                    <textarea name="comment" rows="4" class="form-control"></textarea>
-                </div>
-
-                <!-- Przycisk wysyłki formularza -->
-                <button type="submit" class="btn btn-success">📌 Dodaj zgłoszenie</button>
             </div>
 
-            <!-- Prawa kolumna – wyświetlanie szczegółów itemu -->
-            <div class="col-md-5 offset-md-1">
-                <h5>ℹ️ Szczegóły wybranego itemu</h5>
-                <div id="item-info" class="p-3 border rounded bg-light" style="display: none;">
-                    <p><strong>Opis:</strong> <span id="item-description"></span></p>
-                    <p><strong>Cena:</strong> <span id="item-price"></span> PLN</p>
-                    <p><strong>GPG:</strong> <span id="item-gpg"></span></p>
-                    <p><strong>Dostawca:</strong> <span id="item-supplier"></span></p>
-                    <p><strong>Odpowiedzialny:</strong> <span id="item-responsible"></span></p>
+            <div class="col-lg-5 mt-4 mt-lg-0">
+                <div id="item-info" class="item-info-card" style="display: none;">
+                    <h4 class="item-info-header"><i class="bi bi-file-earmark-text"></i> DANE KOMPONENTU</h4>
+                    <div class="item-info-body">
+                        <p><strong>OPIS:</strong> <span id="item-description"></span></p>
+                        <p><strong>CENA:</strong> <span id="item-price"></span> PLN</p>
+                        <p><strong>GPG:</strong> <span id="item-gpg"></span></p>
+                        <p><strong>DOSTAWCA:</strong> <span id="item-supplier"></span></p>
+                        <p><strong>ODPOWIEDZIALNY:</strong> <span id="item-responsible"></span></p>
+                    </div>
                 </div>
             </div>
         </div>
     </form>
 
-    <!-- Sekcja listy zgłoszeń -->
-    <h3 class="mt-4">📊 Lista zgłoszeń</h3>
-    <table class="table table-striped mt-2">
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Lokalizacja</th>
-                <th>Ilość w systemie</th>
-                <th>Ilość fizycznie</th>
-                <th>Różnica</th>
-                <th>Komentarz</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for req in items %}
-            <tr>
-                <td>{{ req.item }}</td>
-                <td>{{ req.location }}</td>
-                <td>{{ req.system_qty }}</td>
-                <td>{{ req.physical_qty }}</td>
-                <td>{{ req.difference }}</td>
-                <td>{{ req.comment }}</td>
-                <td>{{ req.status }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="mt-5 pt-5 border-top border-secondary">
+        <h2 class="text-center mb-4">LISTA AKTYWNYCH ZGŁOSZEŃ</h2>
+        <div class="table-responsive">
+            <table class="table-cyber">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Lokalizacja</th>
+                        <th>Ilość Systemowa</th>
+                        <th>Ilość Fizyczna</th>
+                        <th>Różnica</th>
+                        <th>Status</th>
+                        <th>Komentarz</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in items %}
+                    <tr>
+                        <td>{{ req.item.item_code }}<br><small class="text-light-color">{{ req.item.description|truncatewords:5 }}</small></td>
+                        <td>{{ req.location.name }}</td>
+                        <td class="text-center">{{ req.system_qty }}</td>
+                        <td class="text-center">{{ req.physical_qty }}</td>
+                        <td class="text-center fw-bold {% if req.difference > 0 %}text-success{% elif req.difference < 0 %}text-danger{% endif %}">
+                            {{ req.difference }}
+                        </td>
+                        <td><span class="status-badge status-{{ req.status|lower }}">{{ req.status }}</span></td>
+                        <td>{{ req.comment|default:"Brak" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-light-color">Brak zgłoszeń do wyświetlenia.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+{% endblock %}
 
-<!-- JavaScript do autouzupełniania itemu i lokalizacji -->
+{% block extra_scripts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // ────────── AUTOCOMPLETE ITEM ──────────
-    const itemCodeInput = document.getElementById("item_code");
-    const itemSuggestionsBox = document.getElementById("item_suggestions");
-
-    itemCodeInput.addEventListener("input", function() {
-        let query = this.value.trim();
+    // Autocomplete dla Item
+    $("#item_code").on("input", function() {
+        let query = $(this).val();
         if (query.length >= 1) {
-            // AJAX do /autocomplete-item/
-            fetch("{% url 'autocomplete_item' %}?query=" + encodeURIComponent(query))
-                .then(response => response.json())
-                .then(data => {
-                    itemSuggestionsBox.innerHTML = "";
-                    data.items.forEach(obj => {
-                        let div = document.createElement("div");
-                        div.classList.add("suggestion-item-item"); // klasa DEDYKOWANA dla itemu
-                        div.dataset.code = obj.code;
-                        div.textContent = obj.code + " - " + obj.description;
-                        itemSuggestionsBox.appendChild(div);
-                    });
+            $.getJSON("{% url 'autocomplete_item' %}", { query: query }, function(data) {
+                let suggestions = $("#item_suggestions");
+                suggestions.empty().show();
+                data.items.forEach(item => {
+                    suggestions.append(`<div class="suggestion-item" data-code="${item.code}">${item.code} - ${item.description}</div>`);
                 });
-        } else {
-            itemSuggestionsBox.innerHTML = "";
-        }
-    });
-
-    // Klik w podpowiedź itemu
-    itemSuggestionsBox.addEventListener("click", function(e) {
-        if (e.target.classList.contains("suggestion-item-item")) {
-            let code = e.target.dataset.code;
-            itemCodeInput.value = code;
-            itemSuggestionsBox.innerHTML = "";
-            getItemDetails(code);
-        }
-    });
-
-    function getItemDetails(code) {
-        fetch("{% url 'get_item_details' %}?item_code=" + encodeURIComponent(code))
-            .then(response => response.json())
-            .then(data => {
-                if (!data.error) {
-                    document.getElementById("item-description").textContent = data.description;
-                    document.getElementById("item-price").textContent = data.price;
-                    document.getElementById("item-gpg").textContent = data.gpg;
-                    document.getElementById("item-supplier").textContent = data.supplier;
-                    document.getElementById("item-responsible").textContent = data.responsible;
-                    document.getElementById("item-info").style.display = "block";
-                } else {
-                    alert(data.error);
-                    document.getElementById("item-info").style.display = "none";
-                }
             });
-    }
-
-    // ────────── AUTOCOMPLETE LOKALIZACJI ──────────
-    const locationInput = document.getElementById("location_input");
-    const locationSuggestionsBox = document.getElementById("location_suggestions");
-
-    locationInput.addEventListener("input", function() {
-        let query = this.value.trim();
-        if (query.length > 0) {
-            fetch("/autocomplete-location/?query=" + encodeURIComponent(query))
-                .then(response => response.json())
-                .then(data => {
-                    locationSuggestionsBox.innerHTML = "";
-                    data.locations.forEach(loc => {
-                        let div = document.createElement("div");
-                        div.classList.add("suggestion-item-loc"); // klasa DEDYKOWANA dla lokalizacji
-                        div.textContent = loc.name;
-                        locationSuggestionsBox.appendChild(div);
-                    });
-                });
         } else {
-            locationSuggestionsBox.innerHTML = "";
+            $("#item_suggestions").empty().hide();
         }
     });
 
-    // Klik w podpowiedź lokalizacji
-    locationSuggestionsBox.addEventListener("click", function(e) {
-        if (e.target.classList.contains("suggestion-item-loc")) {
-            let locName = e.target.textContent;
-            locationInput.value = locName;
-            locationSuggestionsBox.innerHTML = "";
+    // Autocomplete dla Lokalizacji
+    $("#location_input").on("input", function() {
+        let query = $(this).val();
+        if (query.length > 0) {
+            $.getJSON("/autocomplete-location/", { query: query }, function(data) {
+                let suggestions = $("#location_suggestions");
+                suggestions.empty().show();
+                data.locations.forEach(loc => {
+                    suggestions.append(`<div class="suggestion-item" data-name="${loc.name}">${loc.name}</div>`);
+                });
+            });
+        } else {
+            $("#location_suggestions").empty().hide();
         }
     });
 
-    // Kliknięcie poza sugestiami → zamknij listy
-    document.addEventListener("click", function(e) {
-        if (!itemCodeInput.contains(e.target) && !itemSuggestionsBox.contains(e.target)) {
-            itemSuggestionsBox.innerHTML = "";
-        }
-        if (!locationInput.contains(e.target) && !locationSuggestionsBox.contains(e.target)) {
-            locationSuggestionsBox.innerHTML = "";
+    // Wybór sugestii Item
+    $(document).on("click", "#item_suggestions .suggestion-item", function() {
+        let code = $(this).data("code");
+        $("#item_code").val(code);
+        $("#item_suggestions").empty().hide();
+        
+        $.getJSON("{% url 'get_item_details' %}", { item_code: code }, function(data) {
+            if (!data.error) {
+                $("#item-description").text(data.description || 'Brak danych');
+                $("#item-price").text(data.price || 'Brak danych');
+                $("#item-gpg").text(data.gpg || 'Brak danych');
+                $("#item-supplier").text(data.supplier || 'Brak danych');
+                $("#item-responsible").text(data.responsible || 'Brak danych');
+                $("#item-info").show();
+            }
+        });
+    });
+
+    // Wybór sugestii Lokalizacji
+    $(document).on("click", "#location_suggestions .suggestion-item", function() {
+        let name = $(this).data("name");
+        $("#location_input").val(name);
+        $("#location_suggestions").empty().hide();
+    });
+
+    // Ukrywanie sugestii
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.position-relative').length) {
+            $('.suggestions-box').hide();
         }
     });
 });
 </script>
-
-<style>
-/* Style dla boxów z sugestiami - OSOBNE klasy dla itemów i lokalizacji */
-.item-suggestions-box {
-    border: 1px solid #ccc;
-    background: #fff;
-    position: absolute;
-    width: 100%;
-    z-index: 9999;
-    cursor: pointer;
-}
-
-.location-suggestions-box {
-    border: 1px solid #ccc;
-    background: #fff;
-    position: absolute;
-    width: 100%;
-    z-index: 9999;
-    cursor: pointer;
-}
-
-.suggestion-item-item, .suggestion-item-loc {
-    padding: 5px;
-}
-
-.suggestion-item-item:hover, .suggestion-item-loc:hover {
-    background: #f0f0f0;
-}
-</style>
-
 {% endblock %}

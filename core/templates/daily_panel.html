@@ -1,46 +1,75 @@
 {% extends "base.html" %}
+{% block title %}PANEL DZIENNY{% endblock %}
+
 {% block content %}
-
-<div class="container text-center mt-5">
-    <h2 class="mb-4">📋 Panel codziennej pracy</h2>
-    <p class="lead">Pracujesz na: <strong>{{ workplace }}</strong></p>
-
-    <div class="mb-4">
-        <label for="mo_number" class="form-label">📄 Zeskanuj numer MO:</label>
-        <input type="text" id="mo_number" class="form-control text-center" placeholder="Wpisz lub zeskanuj numer MO">
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-speedometer2"></i> PANEL DZIENNY</h1>
+        <p class="text-light-color">GŁÓWNY TERMINAL OPERACYJNY</p>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'call_technician' %}" class="btn btn-danger w-100 p-3">🔧 Wezwij Technika</a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'call_engineer' %}" class="btn btn-warning w-100 p-3">🛠️ Wezwij Inżyniera</a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'call_quality' %}" class="btn btn-info w-100 p-3">🏅 Wezwij Jakość</a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'register_scrap' %}" class="btn btn-dark w-100 p-3">🗑️ Zgłoś Scrap</a>
+    <!-- Sekcja skanowania MO -->
+    <div class="cyber-card mb-5 p-4">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <label for="mo_number" class="form-label text-light-color text-uppercase fw-bold">ZESKANUJ ZLECENIE (MO):</label>
+            </div>
+            <div class="col-md-8">
+                <input type="text" id="mo_number" class="form-control-cyber" style="font-size: 1.5rem; text-align: center; letter-spacing: 2px; font-family: var(--font-primary);" placeholder="OCZEKIWANIE NA SKAN...">
+            </div>
         </div>
     </div>
-    <div class="row mt-4">
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'display_board' category='technician' %}" class="btn btn-danger w-100 p-3">
-                🔧 Tablica Zgłoszeń Techników
-            </a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'display_board' category='engineer' %}" class="btn btn-warning w-100 p-3">
-                🛠️ Tablica Zgłoszeń Inżynierów
-            </a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'display_board' category='quality' %}" class="btn btn-info w-100 p-3">
-                🏅 Tablica Jakości
-            </a>
-        </div>
+
+    <!-- Sekcja Szybkich Akcji -->
+    <h3 class="mb-4">SZYBKIE WEZWANIA</h3>
+    <div class="cyber-grid-container mb-5">
+        <a href="{% url 'call_technician' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3 style="color: var(--error-color);"><i class="bi bi-wrench-adjustable-circle-fill"></i></h3>
+                <p class="mt-2">WEZWIJ TECHNIKA</p>
+            </div>
+        </a>
+        <a href="{% url 'call_engineer' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3 style="color: var(--warning-color);"><i class="bi bi-tools"></i></h3>
+                <p class="mt-2">WEZWIJ INŻYNIERA</p>
+            </div>
+        </a>
+        <a href="{% url 'call_quality' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3 style="color: var(--primary-color);"><i class="bi bi-patch-check-fill"></i></h3>
+                <p class="mt-2">WEZWIJ JAKOŚĆ</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- Sekcja Monitoringu -->
+    <h3 class="mb-4">MONITORING I RAPORTOWANIE</h3>
+    <div class="cyber-grid-container">
+        <a href="{% url 'display_board' category='technician' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3><i class="bi bi-display"></i></h3>
+                <p class="mt-2">TABLICA TECHNIKÓW</p>
+            </div>
+        </a>
+        <a href="{% url 'display_board' category='engineer' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3><i class="bi bi-display"></i></h3>
+                <p class="mt-2">TABLICA INŻYNIERÓW</p>
+            </div>
+        </a>
+        <a href="{% url 'display_board' category='quality' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3><i class="bi bi-display"></i></h3>
+                <p class="mt-2">TABLICA JAKOŚCI</p>
+            </div>
+        </a>
+        <a href="{% url 'register_scrap' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3 style="color: var(--secondary-color);"><i class="bi bi-trash-fill"></i></h3>
+                <p class="mt-2">ZGŁOŚ ODPAD</p>
+            </div>
+        </a>
     </div>
 </div>
-
 {% endblock %}

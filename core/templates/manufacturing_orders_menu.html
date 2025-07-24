@@ -1,30 +1,34 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Zlecenia Produkcyjne{% endblock %}
+{% block title %}ZLECENIA PRODUKCYJNE{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-  <h2>Zlecenia Produkcyjne</h2>
-  <hr/>
-  <p>Wybierz jedną z opcji:</p>
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-cpu-fill"></i> ZLECENIA PRODUKCYJNE</h1>
+        <p class="text-light-color">ZARZĄDZANIE PLANEM I STATUSAMI ZLECEŃ</p>
+    </div>
 
-  <div class="row g-3">
-    <div class="col-md-4">
-      <a href="{% url 'upload_plan' %}" class="btn btn-primary w-100">
-        Wgraj plik z planem
-      </a>
+    <div class="cyber-grid-container">
+        <a href="{% url 'upload_plan' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3 style="color: var(--primary-color);"><i class="bi bi-cloud-upload-fill"></i></h3>
+                <p class="mt-2">WGRAJ PLAN PRODUKCJI</p>
+            </div>
+        </a>
+        <a href="{% url 'upload_status' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3 style="color: var(--warning-color);"><i class="bi bi-cloud-upload-fill"></i></h3>
+                <p class="mt-2">WGRAJ STATUS ZLECEŃ</p>
+            </div>
+        </a>
+        <a href="{% url 'plan_na_dzis' %}" class="text-decoration-none">
+            <div class="cyber-card text-center">
+                <h3 style="color: var(--success-color);"><i class="bi bi-calendar-day-fill"></i></h3>
+                <p class="mt-2">PLAN NA DZIŚ</p>
+            </div>
+        </a>
     </div>
-    <div class="col-md-4">
-      <a href="{% url 'upload_status' %}" class="btn btn-secondary w-100">
-        Wgraj aktualny status zleceń
-      </a>
-    </div>
-    <div class="col-md-4">
-      <a href="{% url 'plan_na_dzis' %}" class="btn btn-success w-100">
-        Plan na dziś
-      </a>
-    </div>
-  </div>
 </div>
 {% endblock %}

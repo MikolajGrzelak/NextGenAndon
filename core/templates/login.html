@@ -4,26 +4,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logowanie</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>ANDO-SYS | AUTORYZACJA</title>
+    <link rel="stylesheet" href="{% static 'css/cyberpunk.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <style>
+        /* --- Tło awaryjne (fallback) --- */
+        body {
+            background: linear-gradient(-45deg, #212529, #2c3136, #343a40, #212529);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Styl dla tła wideo */
+        #video-bg {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -2;
+            object-fit: cover;
+            filter: brightness(0.4);
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 15, 20, 0.5);
+            z-index: -1;
+        }
+
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .login-info {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #2c3136;
+        }
+
+        .login-info h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .login-info p {
+            font-size: 1.1rem;
+            color: var(--text-light-color);
+        }
+
+        .login-form {
+            padding: 3rem;
+        }
+        
+        /* --- NOWOŚĆ: Ciemniejsze pola formularza logowania --- */
+        .login-form .form-control-cyber {
+            background-color: #212529; /* Ciemniejsze tło dla pól */
+            border-color: var(--border-color);
+        }
+        /* --- Koniec nowości --- */
+
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+            .login-info {
+                display: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
 </head>
-<body class="d-flex align-items-center justify-content-center vh-100 bg-light">
+<body>
 
-<div class="card p-4 shadow-lg text-center" style="width: 350px;">
-    <h3 class="text-primary">🔐 Zaloguj się</h3>
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <input type="text" name="username" class="form-control text-center" placeholder="Nazwa użytkownika" required>
-        </div>
-        <div class="mb-3">
-            <input type="password" name="password" class="form-control text-center" placeholder="Hasło" required>
-        </div>
-        <button type="submit" class="btn btn-success w-100">Zaloguj</button>
-    </form>
-</div>
+    <div class="video-overlay"></div>
+    <video autoplay muted loop id="video-bg">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-robotic-arm-working-in-a-factory-22521-large.mp4" type="video/mp4">
+        Twoja przeglądarka nie obsługuje tagu wideo.
+    </video>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-info">
+                <h1>ANDO-SYS</h1>
+                <p>SYSTEM ZARZĄDZANIA PRODUKCJĄ</p>
+                <hr style="border-color: var(--border-color); margin: 2rem 0;">
+                <p class="text-light-color" style="font-size: 0.9rem;">Wprowadź swoje dane uwierzytelniające, aby uzyskać dostęp do terminala.</p>
+            </div>
+            <div class="login-form">
+                <h2 class="mb-4 text-center">AUTORYZACJA</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">IDENTYFIKATOR UŻYTKOWNIKA</label>
+                        <input type="text" name="username" id="username" class="form-control-cyber" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">HASŁO DOSTĘPOWE</label>
+                        <input type="password" name="password" id="password" class="form-control-cyber" required>
+                    </div>
+                    <!-- NOWOŚĆ: Dodany większy margines górny (mt-5) -->
+                    <div class="d-grid mt-5">
+                        <button type="submit" class="btn-cyber btn-success">ZALOGUJ DO SYSTEMU</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

@@ -1,49 +1,85 @@
-<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\index_manager.html -->
 {% extends "base.html" %}
+{% block title %}KONSOLA MANAGERA{% endblock %}
+
 {% block content %}
-
-<div class="container text-center mt-5">
-    <h2 class="mb-4">📊 Panel Managera</h2>
-    <p class="lead">Wybierz akcję, którą chcesz wykonać.</p>
-
-    <div class="row mt-4">
-        <!-- Tablice zgłoszeń -->
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'display_board' 'quality' %}" class="btn btn-primary w-100 p-3">📋 Tablica Zgłoszeń Jakości</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'display_board' 'technician' %}" class="btn btn-primary w-100 p-3">🔧 Tablica Zgłoszeń Technicznych</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'display_board' 'warehouse' %}" class="btn btn-primary w-100 p-3">📦 Tablica Zgłoszeń Magazynowych</a>
-        </div>
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-graph-up-arrow"></i> KONSOLA MANAGERA</h1>
+        <p class="text-light-color">NARZĘDZIA DO ANALIZY I ZARZĄDZANIA PROCESAMI</p>
     </div>
 
-    <div class="row mt-4">
-        <!-- Utworzenie zgłoszenia -->
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'call_quality' %}" class="btn btn-success w-100 p-3">➕ Zgłoszenie Jakości</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'call_technician' %}" class="btn btn-success w-100 p-3">➕ Zgłoszenie Techniczne</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'call_warehouse' %}" class="btn btn-success w-100 p-3">➕ Zgłoszenie Magazynowe</a>
-        </div>
+    <!-- Sekcja Monitoringu -->
+    <h3 class="mb-4">MONITORING PROCESÓW</h3>
+    <div class="cyber-grid-container mb-5">
+        <a href="{% url 'display_board' 'quality' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <!-- NOWA IKONA: Tablica Jakości -->
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 17V7C2 5.89543 2.89543 5 4 5H20C21.1046 5 22 5.89543 22 7V17C22 18.1046 21.1046 19 20 19H4C2.89543 19 2 18.1046 2 17Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 19V22M9 22H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M8.5 13.5L10.5 15.5L15.5 9.5" stroke="#28a745" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>TABLICA JAKOŚCI</h3>
+            </div>
+        </a>
+        <a href="{% url 'display_board' 'technician' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <!-- NOWA IKONA: Tablica Techników -->
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 17V7C2 5.89543 2.89543 5 4 5H20C21.1046 5 22 5.89543 22 7V17C22 18.1046 21.1046 19 20 19H4C2.89543 19 2 18.1046 2 17Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 19V22M9 22H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M15.6234 8.28415C15.6234 7.64333 15.1053 7.12524 14.4645 7.12524C13.8237 7.12524 13.3056 7.64333 13.3056 8.28415C13.3056 9.25362 12.833 10.2357 12.0002 10.2357C11.1674 10.2357 10.6948 9.25362 10.6948 8.28415C10.6948 7.64333 10.1767 7.12524 9.53589 7.12524C8.89507 7.12524 8.37695 7.64333 8.37695 8.28415V12.5415C8.37695 13.1823 8.89507 13.7004 9.53589 13.7004H14.4645C15.1053 13.7004 15.6234 13.1823 15.6234 12.5415V8.28415Z" stroke="#ffc107" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <h3>TABLICA TECHNIKÓW</h3>
+            </div>
+        </a>
+        <a href="{% url 'warehouse_tickets' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <!-- NOWA IKONA: Tablica Magazynu -->
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 17V7C2 5.89543 2.89543 5 4 5H20C21.1046 5 22 5.89543 22 7V17C22 18.1046 21.1046 19 20 19H4C2.89543 19 2 18.1046 2 17Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 19V22M9 22H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M7 14L12 11L17 14M7 10L12 7L17 10" stroke="#007bff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 11V7" stroke="#007bff" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3>TABLICA MAGAZYNU</h3>
+            </div>
+        </a>
     </div>
 
-    <div class="row mt-4">
-        <!-- Podgląd planu -->
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'production_plan' %}" class="btn btn-warning w-100 p-3">📅 Podgląd Planu Produkcji</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'cycle_count_view' %}" class="btn btn-warning w-100 p-3">📋 Cycle Count</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'production_report' %}" class="btn btn-warning w-100 p-3">📊 Raport Produkcji</a>
-        </div>
+    <!-- Sekcja Raportów i Analiz -->
+    <h3 class="mb-4">RAPORTY I ANALIZY</h3>
+    <div class="cyber-grid-container">
+        <a href="{% url 'production_plan' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--warning-color);">
+                    <i class="bi bi-calendar-week"></i>
+                </div>
+                <h3>PLAN PRODUKCJI</h3>
+            </div>
+        </a>
+        <a href="{% url 'production_report' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--primary-color);">
+                    <i class="bi bi-bar-chart-line-fill"></i>
+                </div>
+                <h3>RAPORT PRODUKCJI</h3>
+            </div>
+        </a>
+        <a href="{% url 'cycle_count_view' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--secondary-color);">
+                    <i class="bi bi-clipboard-data"></i>
+                </div>
+                <h3>WIDOK CYCLE COUNT</h3>
+            </div>
+        </a>
     </div>
 </div>
-
 {% endblock %}

@@ -1,16 +1,20 @@
 {% extends "base.html" %}
+{% block title %}ODPAD ZAREJESTROWANY{% endblock %}
+
 {% block content %}
-
-<div class="container mt-5">
-    <h2 class="text-success">✅ Odpady zostały zarejestrowane!</h2>
-    <p class="mt-3">
-        <a href="{% url 'register_scrap' %}" class="btn btn-primary">➕ Rejestruj kolejny odpad</a>
-        {% if request.session.workplace %}
-            <a href="{% url 'daily_panel' workplace=request.session.workplace %}" class="btn btn-secondary">🔙 Powrót</a>
-        {% else %}
-            <a href="{% url 'index' %}" class="btn btn-warning">🏠 Strona główna</a>
-        {% endif %}
-    </p>
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="cyber-container text-center">
+            <h1 class="mb-3" style="color: var(--success-color);"><i class="bi bi-check-circle-fill"></i></h1>
+            <h2 class="mb-3">ODPAD ZOSTAŁ ZAREJESTROWANY</h2>
+            <p class="text-light-color mb-5">Protokół rejestracji odpadu został pomyślnie zapisany w systemie.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'register_scrap' %}" class="btn-cyber btn-success">
+                    <i class="bi bi-plus-circle"></i> ZAREJESTRUJ KOLEJNY
+                </a>
+                <a href="{% url 'daily_panel' %}" class="btn-cyber-outline">POWRÓT DO PANELU</a>
+            </div>
+        </div>
+    </div>
 </div>
-
 {% endblock %}

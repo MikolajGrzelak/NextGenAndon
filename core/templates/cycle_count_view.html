@@ -1,77 +1,74 @@
 {% extends "base.html" %}
+{% block title %}LISTA ZGŁOSZEŃ INWENTARYZACYJNYCH{% endblock %}
+
 {% block content %}
+<div class="cyber-container">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-card-list"></i> LISTA ZGŁOSZEŃ</h1>
+            <p class="text-light-color m-0">ZARZĄDZANIE WNIOSKAMI O PRZELICZENIE STANÓW</p>
+        </div>
+        <a href="{% url 'cycle_count_requests' %}" class="btn-cyber btn-success">
+            <i class="bi bi-plus-circle"></i> DODAJ NOWE ZGŁOSZENIE
+        </a>
+    </div>
 
-<div class="container mt-4">
-    <h2>📋 Lista wniosków o przeliczenie stanów magazynowych</h2>
-
-    <!-- Przycisk do strony z formularzem tworzenia nowego zgłoszenia -->
-    <a href="{% url 'cycle_count_requests' %}" class="btn btn-success mb-3">
-        📌 Dodaj nowe zgłoszenie
-    </a>
-
-    <style>
-        table td, table th {
-            white-space: nowrap;      /* Nie zawijaj wierszy */
-            vertical-align: middle;   /* W pionie wyśrodkuj */
-        }
-        .btn-group { 
-            display: inline-flex;     /* Grupa przycisków w linii */
-        }
-        .btn-group a.btn {
-            margin-right: 5px;        /* Odstęp między przyciskami */
-        }
-    </style>
-    
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Lokalizacja</th>
-                <th>Ilość w systemie</th>
-                <th>Ilość fizycznie</th>
-                <th>Różnica</th>
-                <th>Komentarz</th>
-                <th>Status</th>
-                <th>Akcje</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for req in requests %}
-            <tr>
-                <td>{{ req.item }}</td>
-                <td>{{ req.location }}</td>
-                <td>{{ req.system_qty }}</td>
-                <td>{{ req.physical_qty }}</td>
-                <td>{{ req.difference }}</td>
-                <td>{{ req.comment }}</td>
-                <td><strong>{{ req.get_status_display }}</strong></td>
-                <td>
-                    {% if req.status == "new" %}
-                        <!-- Zmieniamy z 'open' na 'review' -->
-                        <a href="{% url 'update_cycle_count_status' req.id 'review' %}"
-                           class="btn btn-warning btn-sm">🔄 W trakcie</a>
-
-                    {% elif req.status == "review" %}
-                        <!-- Dopiero w tym statusie widać kolejne przyciski -->
-                        <a href="{% url 'update_cycle_count_status' req.id 'closed' %}"
-                           class="btn btn-primary btn-sm">✅ Znalezione</a>
-                        <a href="{% url 'update_cycle_count_status' req.id 'removed' %}"
-                           class="btn btn-danger btn-sm">❌ Do usunięcia</a>
-
-                    {% else %}
-                        <!-- Jeśli status inny niż open/review, np. closed/removed,
-                             nic nie wyświetlamy albo pokazujemy np. 'Zamknięty' -->
-                        <span class="text-muted">Brak akcji</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="8" class="text-center">Brak zgłoszeń</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table-cyber">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Lokalizacja</th>
+                    <th class="text-center">Ilość Systemowa</th>
+                    <th class="text-center">Ilość Fizyczna</th>
+                    <th class="text-center">Różnica</th>
+                    <th>Status</th>
+                    <th>Komentarz</th>
+                    <th class="text-center">Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                <tr>
+                    <td>
+                        {{ req.item.item_code }}
+                        <br>
+                        <small class="text-light-color">{{ req.item.description|truncatewords:5 }}</small>
+                    </td>
+                    <td>{{ req.location.name }}</td>
+                    <td class="text-center">{{ req.system_qty }}</td>
+                    <td class="text-center">{{ req.physical_qty }}</td>
+                    <td class="text-center fw-bold {% if req.difference > 0 %}text-success{% elif req.difference < 0 %}text-danger{% endif %}">
+                        {{ req.difference }}
+                    </td>
+                    <td><span class="status-badge status-{{ req.status|lower }}">{{ req.get_status_display }}</span></td>
+                    <td>{{ req.comment|default:"Brak" }}</td>
+                    <td class="text-center">
+                        <div class="action-buttons">
+                            {% if req.status == "new" %}
+                                <a href="{% url 'update_cycle_count_status' req.id 'review' %}" class="btn-cyber-sm btn-warning" title="Rozpocznij weryfikację">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                </a>
+                            {% elif req.status == "review" %}
+                                <a href="{% url 'update_cycle_count_status' req.id 'closed' %}" class="btn-cyber-sm btn-success" title="Zakończ (zgodne)">
+                                    <i class="bi bi-check-lg"></i>
+                                </a>
+                                <a href="{% url 'update_cycle_count_status' req.id 'removed' %}" class="btn-cyber-sm btn-danger" title="Anuluj (błąd)">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            {% else %}
+                                <span class="text-light-color">-</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center text-light-color py-4">Brak zgłoszeń do wyświetlenia.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
-
 {% endblock %}

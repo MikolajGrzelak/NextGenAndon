@@ -1,30 +1,93 @@
 {% extends "base.html" %}
+{% block title %}TERMINAL LIDERA{% endblock %}
+
 {% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-person-workspace"></i> TERMINAL LIDERA</h1>
+        <p class="text-light-color">CENTRUM ZARZĄDZANIA ZESPOŁEM I ZASOBAMI</p>
+    </div>
 
-<div class="container text-center mt-5">
-    <h2 class="mb-4">🏭 Gdzie dzisiaj pracujesz?</h2>
-    <p class="lead">Wybierz swoją linię produkcyjną.</p>
+    <!-- Sekcja Wezwań i Zgłoszeń -->
+    <h3 class="mb-4">WEZWANIA I ZGŁOSZENIA</h3>
+    <div class="cyber-grid-container mb-5">
+        <a href="{% url 'call_technician' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--error-color);">
+                    <i class="bi bi-wrench-adjustable-circle-fill"></i>
+                </div>
+                <h3>WEZWIJ TECHNIKA</h3>
+            </div>
+        </a>
+        <a href="{% url 'call_engineer' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--warning-color);">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <h3>WEZWIJ INŻYNIERA</h3>
+            </div>
+        </a>
+        <a href="{% url 'call_quality' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--primary-color);">
+                    <i class="bi bi-patch-check-fill"></i>
+                </div>
+                <h3>WEZWIJ JAKOŚĆ</h3>
+            </div>
+        </a>
+         <a href="{% url 'call_warehouse' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <h3>WEZWIJ MAGAZYN</h3>
+            </div>
+        </a>
+        <a href="{% url 'register_scrap' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--secondary-color);">
+                    <i class="bi bi-trash-fill"></i>
+                </div>
+                <h3>ZGŁOŚ ODPAD</h3>
+            </div>
+        </a>
+    </div>
 
-    <div class="row mt-4">
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'production_c2' %}" class="btn btn-primary w-100 p-3">🛠️ Produkcja C2</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'set_workplace' 'RM5' %}" class="btn btn-success w-100 p-3">⚙️ Produkcja RM5</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'set_workplace' 'B2B' %}" class="btn btn-warning w-100 p-3">📦 Produkcja B2B</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'set_workplace' 'Gaming' %}" class="btn btn-danger w-100 p-3">🎰 Produkcja Gaming</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'set_workplace' 'ScanCoin' %}" class="btn btn-info w-100 p-3">💰 Produkcja ScanCoin</a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="{% url 'set_workplace' 'Comestero' %}" class="btn btn-dark w-100 p-3">🔄 Produkcja Comestero</a>
-        </div>
+    <!-- Sekcja Monitoringu -->
+    <h3 class="mb-4">MONITORING I TABLICE</h3>
+    <div class="cyber-grid-container">
+        <a href="{% url 'display_board' category='technician' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <i class="bi bi-display"></i>
+                </div>
+                <h3>TABLICA TECHNIKÓW</h3>
+            </div>
+        </a>
+        <a href="{% url 'display_board' category='engineer' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <i class="bi bi-display"></i>
+                </div>
+                <h3>TABLICA INŻYNIERÓW</h3>
+            </div>
+        </a>
+        <a href="{% url 'display_board' category='quality' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <i class="bi bi-display"></i>
+                </div>
+                <h3>TABLICA JAKOŚCI</h3>
+            </div>
+        </a>
+        <a href="{% url 'warehouse_tickets' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <i class="bi bi-display"></i>
+                </div>
+                <h3>TABLICA MAGAZYNU</h3>
+            </div>
+        </a>
     </div>
 </div>
-
 {% endblock %}

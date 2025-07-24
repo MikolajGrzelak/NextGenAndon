@@ -1,85 +1,84 @@
 {% extends "base.html" %}
-{% block content %}
-
-<div class="container mt-5">
-    <h2 class="mb-4">
-        {% if category == 'technician' %}
-            🔧 Tablica Zgłoszeń Techników
-        {% elif category == 'quality' %}
-            🏅 Tablica Zgłoszeń Jakości
-        {% else %}
-            🛠️ Tablica Zgłoszeń Inżynierów
-        {% endif %}
-    </h2>
-
-    {% if tickets %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Zgłaszający</th>
-                    <th>Miejsce pracy</th>
-                    <th>Opis</th>
-                    <th>Kategoria</th>
-                    <th>Status</th>
-                    <th>Akcje</th>
-                </tr>
-                <style>
-                    /* Miganie dla otwartych zgłoszeń */
-                    .blinking {
-                    animation: blink 1s infinite alternate;
-                    }
-                
-                    @keyframes blink {
-                        0% { background-color:rgb(48, 8, 230) !important; color: white; transform: scale(1); }
-                        50% { background-color:rgb(241, 126, 11) !important; color: black; transform: scale(1.05); }
-                        100% { background-color:rgb(204, 17, 17) !important; color: white; transform: scale(1); }
-                    }
-                    
-                    .blinking td {
-                        animation: blink 1.5s infinite alternate;
-                    }
-                </style>
-            </thead>
-            <tbody>
-                {% for ticket in tickets %}
-                <tr {% if ticket.status == 'open' %} class="blinking" {% endif %}>
-                    <td>{{ ticket.created_at|date:"Y-m-d H:i" }}</td>
-                    <td>{{ ticket.created_by }}</td>
-                    <td>{{ ticket.workplace }}</td>
-                    <td>{{ ticket.description }}</td>
-                    <td>
-                        {% if ticket.category == "technician" %}
-                            <span class="badge bg-danger">🔧 Technik</span>
-                        {% elif ticket.category == "quality" %}
-                            <span class="badge bg-info">🏅 Jakość</span>
-                        {% else %}
-                            <span class="badge bg-primary">🛠️ Inżynier</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ ticket.get_status_display }}</td>
-                    <td>
-                        {% if ticket.status == 'open' %}
-                            <a href="{% url 'take_ticket' ticket.id %}" class="btn btn-secondary btn-sm">🟡 Podejmij</a>
-                        {% elif ticket.status == 'in_progress' %}
-                            <a href="{% url 'close_ticket' ticket.id %}" class="btn btn-success btn-sm">🟢 Zamknięto</a>
-                        {% endif %}
-                    </td>
-                    <tr {% if ticket.status == 'open' %} class="blinking" data-debug="blinking-active" {% endif %}>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p class="text-muted">Brak zgłoszeń.</p>
+{% block title %}
+    TABLICA ZGŁOSZEŃ: 
+    {% if category == 'technician' %}TECHNIK
+    {% elif category == 'quality' %}JAKOŚĆ
+    {% else %}INŻYNIER
     {% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<!-- Auto-odświeżanie strony co 10 sekund -->
+<meta http-equiv="refresh" content="10">
+{% endblock %}
+
+{% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3">
+            <i class="bi bi-display"></i> TABLICA ZGŁOSZEŃ: 
+            <span style="color: var(--secondary-color);">
+                {% if category == 'technician' %}TECHNIKÓW
+                {% elif category == 'quality' %}KONTROLI JAKOŚCI
+                {% else %}INŻYNIERÓW
+                {% endif %}
+            </span>
+        </h1>
+        <p class="text-light-color">MONITORING ZGŁOSZEŃ W CZASIE RZECZYWISTYM</p>
+    </div>
+
+    <div class="cyber-grid-container">
+        {% for ticket in tickets %}
+        <!-- Dodajemy nową klasę 'card-status-*' oraz 'blinking-card' dla otwartych zgłoszeń -->
+        <div class="cyber-card h-100 card-status-{{ ticket.status|lower }} {% if ticket.status == 'open' %}blinking-card{% endif %}">
+            <div class="d-flex justify-content-between align-items-start">
+                <h2 class="mb-0">ZGŁOSZENIE #{{ ticket.id }}</h2>
+                <span class="status-badge status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span>
+            </div>
+            <hr class="my-3" style="border-color: var(--border-color);">
+            
+            <!-- NOWA, DWUKOLUMNOWA SEKCJA SZCZEGÓŁÓW -->
+            <div class="ticket-details-grid">
+                <div class="detail-item">
+                    <strong>Zgłaszający:</strong>
+                    <span>{{ ticket.created_by.username }}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Data zgłoszenia:</strong>
+                    <span>{{ ticket.created_at|date:"Y-m-d H:i:s" }}</span>
+                </div>
+                {% if ticket.assigned_to %}
+                <div class="detail-item">
+                    <strong>Przypisano do:</strong>
+                    <span>{{ ticket.assigned_to.username }}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Data podjęcia:</strong>
+                    <span>{{ ticket.taken_at|date:"Y-m-d H:i:s" }}</span>
+                </div>
+                {% endif %}
+                <div class="detail-item-full">
+                    <strong>Opis:</strong>
+                    <span>{{ ticket.description|default:"Brak opisu." }}</span>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-3">
+                {% if ticket.status == 'open' %}
+                    <a href="{% url 'take_ticket' ticket.id %}" class="btn-cyber btn-warning w-100">PODEJMIJ ZGŁOSZENIE</a>
+                {% elif ticket.status == 'in_progress' and ticket.assigned_to == user %}
+                    <a href="{% url 'close_ticket' ticket.id %}" class="btn-cyber btn-success w-100">ZAMKNIJ ZGŁOSZENIE</a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-3"> <!-- Rozciągnięcie na 3 kolumny, jeśli siatka jest pusta -->
+            <div class="cyber-card text-center py-5">
+                <h2 class="text-light-color"><i class="bi bi-check-circle"></i> BRAK AKTYWNYCH ZGŁOSZEŃ</h2>
+                <p>System nie wykrył żadnych zgłoszeń w tym sektorze.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
-
-<!-- 🔄 Auto-refresh co 5 sekund -->
-<script>
-    setInterval(function() {
-        location.reload();
-    }, 10000); // Odświeżanie co 5 sekund
-</script>
-
 {% endblock %}

@@ -1,16 +1,28 @@
 {% extends "base.html" %}
+{% block title %}WEZWANIE: INŻYNIER{% endblock %}
+
 {% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+        <div class="cyber-container text-center">
+            <h1 class="mb-3"><i class="bi bi-tools"></i> WEZWANIE: INŻYNIER</h1>
+            <p class="text-light-color mb-4">SYSTEM ZGŁOSZEŃ SERWISOWYCH</p>
 
-<div class="container text-center mt-5">
-    <h2 class="mb-4">🔧 Wezwij inżyniera</h2>
-    <p class="lead">Wpisz problem i wyślij zgłoszenie.</p>
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Pole 'workplace' zostało usunięte -->
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="workplace" value="{{ request.session.workplace }}">
-        <textarea name="description" class="form-control mb-3" rows="4" placeholder="Opisz problem..." required></textarea>
-        <button type="submit" class="btn btn-warning w-100">📢 Wyślij zgłoszenie</button>
-    </form>
+                <div class="mb-3">
+                    <textarea name="description" class="form-control-cyber" rows="5" placeholder="Opisz problem techniczny lub awarię..." required></textarea>
+                </div>
+                
+                <div class="d-grid">
+                    <!-- Używamy nowej klasy 'btn-warning' dla przycisku -->
+                    <button type="submit" class="btn-cyber btn-warning">WYŚLIJ ZGŁOSZENIE SERWISOWE</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-
 {% endblock %}

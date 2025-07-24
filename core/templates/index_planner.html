@@ -1,36 +1,61 @@
 {% extends "base.html" %}
+{% block title %}MODUŁ PLANISTY{% endblock %}
+
 {% block content %}
-
-<div class="container text-center mt-5">
-    <h2>📊 Panel Planisty</h2>
-
-    <div class="row mt-4">
-        <!-- Inne przyciski: upload plan, upload status, itp. -->
-        <div class="col-md-6 mb-3">
-            <a href="{% url 'upload_plan' %}" class="btn btn-primary w-100 p-3">📂 Wgraj plan produkcji</a>
-        </div>
-        <div class="col-md-6 mb-3">
-            <a href="{% url 'upload_status' %}" class="btn btn-warning w-100 p-3">📊 Wgraj aktualny status</a>
-        </div>
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-calendar3-week"></i> MODUł PLANISTY</h1>
+        <p class="text-light-color">ZARZĄDZANIE DANYMI I HARMONOGRAMEM PRODUKCJI</p>
     </div>
 
-    <!-- Nowy przycisk zamiast "plan-na-dzis" -->
-    <div class="row mt-4">
-        <div class="col-md-12 mb-3">
-            <!-- Zmieniamy przycisk "Plan na dziś" na "Widok planu" -->
-            <a href="{% url 'production_plan' %}" class="btn btn-success w-100 p-3">
-                📋 Podgląd planu produkcji
-            </a>
-        </div>
-    </div>
-    <div class="d-flex flex-column gap-3">
-        <a class="btn btn-info" href="{% url 'upload_production_log' %}">
-          Wgraj dzienny Excela (ProductionLog)
+    <!-- Sekcja Zarządzania Danymi -->
+    <h3 class="mb-4">ZARZĄDZANIE DANYMI</h3>
+    <div class="cyber-grid-container mb-5">
+        <a href="{% url 'upload_plan' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--primary-color);">
+                    <i class="bi bi-cloud-upload-fill"></i>
+                </div>
+                <h3>WGRAJ PLAN PRODUKCJI</h3>
+            </div>
         </a>
-        <a class="btn btn-success" href="{% url 'production_report' %}">
-          Generuj / Zobacz Raport Produkcji
+        <a href="{% url 'upload_status' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--warning-color);">
+                    <i class="bi bi-cloud-upload-fill"></i>
+                </div>
+                <h3>WGRAJ STATUS ZLECEŃ</h3>
+            </div>
+        </a>
+        <a href="{% url 'upload_production_log' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--success-color);">
+                    <i class="bi bi-cloud-upload-fill"></i>
+                </div>
+                <h3>WGRAJ DZIENNIK PRODUKCJI</h3>
+            </div>
+        </a>
+    </div>
+
+    <!-- Sekcja Podglądu i Raportów -->
+    <h3 class="mb-4">PODGLĄD I RAPORTY</h3>
+    <div class="cyber-grid-container">
+        <a href="{% url 'production_plan' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <h3>PODGLĄD PLANU</h3>
+            </div>
+        </a>
+        <a href="{% url 'production_report' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <i class="bi bi-bar-chart-line-fill"></i>
+                </div>
+                <h3>RAPORT PRODUKCJI</h3>
+            </div>
         </a>
     </div>
 </div>
-
 {% endblock %}

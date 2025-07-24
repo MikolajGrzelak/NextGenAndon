@@ -1,55 +1,50 @@
-<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\inv_request_create.html -->
 {% extends "base.html" %}
 {% load static %}
+{% block title %}NOWY WNIOSEK INWENTARYZACYJNY{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-  <h2>Nowy Wniosek Inwentaryzacyjny</h2>
-  <p class="text-muted">Wklej dane z Excela bądź ręcznie uzupełnij poniższe pola.</p>
-
-  {% if messages %}
-    <div class="alert alert-danger">
-      {% for message in messages %}
-        <p>{{ message }}</p>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  <form method="POST">
-    {% csrf_token %}
-
-    <!-- Sekcja do wklejania (lub wprowadzania) item_code -->
-    <div class="mb-3">
-      <label for="itemCodes" class="form-label">Kody Itemów (po jednym w wierszu)</label>
-      <textarea id="itemCodes" name="item_codes" class="form-control" rows="5"
-        placeholder="Np.&#10;ABC123&#10;XYZ987"></textarea>
-      <small class="text-muted">Skopiuj i wklej listę kodów z Excela (każdy w osobnej linii).</small>
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-file-earmark-diff-fill"></i> NOWY WNIOSEK INWENTARYZACYJNY</h1>
+        <p class="text-light-color">Wklej dane z arkusza kalkulacyjnego lub wprowadź je ręcznie w odpowiednie pola.</p>
     </div>
 
-    <!-- Ilości (mogą być ujemne) -->
-    <div class="mb-3">
-      <label for="quantities" class="form-label">Ilości (po jednej w wierszu, odpowiadające itemom)</label>
-      <textarea id="quantities" name="quantities" class="form-control" rows="5"
-        placeholder="Np.&#10;10&#10;-5"></textarea>
-      <small class="text-muted">Tu wklej kolumnę ilości z Excela (każda w osobnej linii).</small>
-    </div>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="cyber-alert cyber-alert-error mb-4">
+                <p class="m-0">{{ message }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
 
-    <!-- Lokalizacje -->
-    <div class="mb-3">
-      <label for="locations" class="form-label">Lokalizacje (po jednej w wierszu)</label>
-      <textarea id="locations" name="locations" class="form-control" rows="5"
-        placeholder="Np.&#10;SD10A4&#10;R45-B"></textarea>
-      <small class="text-muted">Każdy wiersz lokalizacji odpowiada temu samemu wierszowi w itemach/ilościach.</small>
-    </div>
-
-    <!-- Kody Scrapu (3-znakowe) -->
-    <div class="mb-3">
-      <label for="scrapCodes" class="form-label">Kody Scrapu (po jednym w wierszu)</label>
-      <textarea id="scrapCodes" name="scrap_codes" class="form-control" rows="5"
-        placeholder="Np.&#10;ABC&#10;DEF"></textarea>
-      <small class="text-muted">Wklej kody scrapu (3 znaki), jeden na linię.</small>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Zapisz wniosek</button>
-  </form>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row g-4">
+            <!-- Kolumna z polami tekstowymi -->
+            <div class="col-lg-6">
+                <div class="mb-4">
+                    <label for="itemCodes" class="form-label">KODY KOMPONENTÓW (każdy w nowej linii)</label>
+                    <textarea id="itemCodes" name="item_codes" class="form-control-cyber" rows="8" placeholder="np.&#10;KOMPONENT123&#10;KOMPONENT456"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="quantities" class="form-label">ILOŚCI (w tej samej kolejności)</label>
+                    <textarea id="quantities" name="quantities" class="form-control-cyber" rows="8" placeholder="np.&#10;10&#10;-5"></textarea>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="mb-4">
+                    <label for="locations" class="form-label">LOKALIZACJE (w tej samej kolejności)</label>
+                    <textarea id="locations" name="locations" class="form-control-cyber" rows="8" placeholder="np.&#10;LOKACJA_A1&#10;LOKACJA_B2"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="scrapCodes" class="form-label">KODY ODPADU (w tej samej kolejności)</label>
+                    <textarea id="scrapCodes" name="scrap_codes" class="form-control-cyber" rows="8" placeholder="np.&#10;KOD1&#10;KOD2"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn-cyber btn-success">UTWÓRZ WNIOSEK</button>
+        </div>
+    </form>
 </div>
 {% endblock %}

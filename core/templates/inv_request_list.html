@@ -1,110 +1,110 @@
-<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\inv_request_list.html -->
 {% extends "base.html" %}
+{% block title %}LISTA WNIOSKÓW INWENTARYZACYJNYCH{% endblock %}
+
 {% block content %}
-<h2>Lista nowych wniosków</h2>
-<div class="d-flex justify-content-between">
-    <a href="{% url 'inv_request_create' %}" class="btn btn-primary">Nowy wniosek</a>
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="filterMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-            Filtruj
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterMenuButton">
-            <form method="GET" action="{% url 'inv_request_list' %}" class="px-4 py-3">
-                <div class="form-group">
-                    <label for="created_from">Wnioski utworzone od:</label>
-                    <input type="date" id="created_from" name="created_from" class="form-control" value="{{ request.GET.created_from }}">
-                </div>
-                <div class="form-group">
-                    <label for="created_to">Wnioski utworzone do:</label>
-                    <input type="date" id="created_to" name="created_to" class="form-control" value="{{ request.GET.created_to }}">
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Filtruj</button>
-            </form>
-        </ul>
+<div class="cyber-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-card-list"></i> WNIOSKI INWENTARYZACYJNE</h1>
+            <p class="text-light-color m-0">ZARZĄDZANIE WNIOSKAMI O MODYFIKACJĘ STANÓW</p>
+        </div>
+        <a href="{% url 'inv_request_create' %}" class="btn-cyber btn-success">
+            <i class="bi bi-plus-circle"></i> NOWY WNIOSEK
+        </a>
     </div>
-</div>
 
-{% if request.GET.created_from or request.GET.created_to %}
-<div class="mt-3">
-    <a href="{% url 'inv_request_list' %}" class="btn btn-link text-danger">
-        Usuń filtry <span class="bi bi-x"></span>
-    </a>
-</div>
-{% endif %}
-
-<table class="table mt-3">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Status</th>
-            <th>Data utworzenia</th>
-            <th>Wartość</th>
-            <th>Akcje</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for req in page_obj %}
-        <tr>
-            <td>{{ req.id }}</td>
-            <td>{{ req.get_status_display }}</td>
-            <td>{{ req.created_at }}</td>
-            <td>{{ req.total_value|floatformat:2 }} PLN</td>
-            <td>
-                <a href="{% url 'inv_request_detail' req.id %}" class="btn btn-info">Podgląd</a>
-                {% if req.status == 'awaiting_magazyn' %}
-                    {% if 'Magazyn' in user_groups %}
-                        <a href="{% url 'inv_request_approve' req.id %}" class="btn btn-success">Zatwierdź</a>
-                        <a href="{% url 'inv_request_reject' req.id %}" class="btn btn-danger">Odrzuć</a>
-                    {% endif %}
-                {% elif req.status == 'awaiting_dyrektor' %}
-                    {% if 'Dyrektor' in user_groups %}
-                        <a href="{% url 'inv_request_approve' req.id %}" class="btn btn-success">Zatwierdź</a>
-                        <a href="{% url 'inv_request_reject' req.id %}" class="btn btn-danger">Odrzuć</a>
-                    {% endif %}
-                {% elif req.status == 'awaiting_cycle' %}
-                    {% if 'CycleCount' in user_groups %}
-                        <a href="{% url 'inv_request_approve' req.id %}" class="btn btn-success">Zatwierdź</a>
-                        <a href="{% url 'inv_request_reject' req.id %}" class="btn btn-danger">Odrzuć</a>
-                    {% endif %}
-                {% endif %}
-                {% if req.created_by == user %}
-                    <a href="{% url 'inv_request_cancel' req.id %}" class="btn btn-warning">Anuluj</a>
-                {% endif %}
-            </td>
-        </tr>
-    {% empty %}
-        <tr><td colspan="5">Brak wniosków</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
-
-<!-- Paginacja -->
-<nav>
-    <ul class="pagination">
-        {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page=1{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}">Pierwsza</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}">Poprzednia</a>
-            </li>
+    <!-- Panel filtrowania -->
+    <div class="cyber-card mb-5">
+        <form method="GET" action="{% url 'inv_request_list' %}" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label for="created_from" class="form-label">Wnioski utworzone od:</label>
+                <input type="date" id="created_from" name="created_from" class="form-control-cyber" value="{{ request.GET.created_from }}">
+            </div>
+            <div class="col-md-5">
+                <label for="created_to" class="form-label">Wnioski utworzone do:</label>
+                <input type="date" id="created_to" name="created_to" class="form-control-cyber" value="{{ request.GET.created_to }}">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn-cyber">FILTRUJ</button>
+            </div>
+        </form>
+        {% if request.GET.created_from or request.GET.created_to %}
+        <div class="mt-3">
+            <a href="{% url 'inv_request_list' %}" class="text-danger text-decoration-none">
+                <i class="bi bi-x-circle"></i> Usuń filtry
+            </a>
+        </div>
         {% endif %}
-        <li class="page-item disabled">
-            <span class="page-link">Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}</span>
-        </li>
-        {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}">Następna</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}">Ostatnia</a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
+    </div>
 
-<!-- Suma wartości zatwierdzonych wniosków w bieżącym miesiącu -->
-<div class="mt-3">
-    <strong>Suma wartości zatwierdzonych wniosków w tym miesiącu: {{ total_approved_value|floatformat:2 }} PLN</strong>
+    <!-- Tabela z listą wniosków -->
+    <div class="table-responsive">
+        <table class="table-cyber">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Status</th>
+                    <th>Data utworzenia</th>
+                    <th class="text-end">Wartość</th>
+                    <th class="text-center">Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in page_obj %}
+                <tr>
+                    <td>#{{ req.id }}</td>
+                    <td><span class="status-badge status-{{ req.status|lower }}">{{ req.get_status_display }}</span></td>
+                    <td>{{ req.created_at|date:"Y-m-d H:i" }}</td>
+                    <td class="text-end" style="color: var(--secondary-color);">{{ req.total_value|floatformat:2 }} PLN</td>
+                    <td class="text-center">
+                        <div class="action-buttons">
+                            <a href="{% url 'inv_request_detail' req.id %}" class="btn-cyber-sm" title="Podgląd"><i class="bi bi-eye-fill"></i></a>
+                            {% if req.status == 'awaiting_magazyn' and 'Magazyn' in user_groups %}
+                                <a href="{% url 'inv_request_approve' req.id %}" class="btn-cyber-sm btn-success" title="Zatwierdź"><i class="bi bi-check-lg"></i></a>
+                                <a href="{% url 'inv_request_reject' req.id %}" class="btn-cyber-sm btn-danger" title="Odrzuć"><i class="bi bi-x-lg"></i></a>
+                            {% elif req.status == 'awaiting_dyrektor' and 'Dyrektor' in user_groups %}
+                                <a href="{% url 'inv_request_approve' req.id %}" class="btn-cyber-sm btn-success" title="Zatwierdź"><i class="bi bi-check-lg"></i></a>
+                                <a href="{% url 'inv_request_reject' req.id %}" class="btn-cyber-sm btn-danger" title="Odrzuć"><i class="bi bi-x-lg"></i></a>
+                            {% elif req.status == 'awaiting_cycle' and 'CycleCount' in user_groups %}
+                                <a href="{% url 'inv_request_approve' req.id %}" class="btn-cyber-sm btn-success" title="Zatwierdź"><i class="bi bi-check-lg"></i></a>
+                                <a href="{% url 'inv_request_reject' req.id %}" class="btn-cyber-sm btn-danger" title="Odrzuć"><i class="bi bi-x-lg"></i></a>
+                            {% endif %}
+                            {% if req.created_by == user and req.status != 'approved' and req.status != 'rejected' and req.status != 'cancelled' %}
+                                <a href="{% url 'inv_request_cancel' req.id %}" class="btn-cyber-sm btn-warning" title="Anuluj"><i class="bi bi-trash-fill"></i></a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-light-color py-4">Brak wniosków do wyświetlenia.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginacja -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pagination-nav">
+        <ul class="pagination-list">
+            {% if page_obj.has_previous %}
+                <li class="pagination-item"><a href="?page=1{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}" class="pagination-link">&laquo;</a></li>
+                <li class="pagination-item"><a href="?page={{ page_obj.previous_page_number }}{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}" class="pagination-link">&lsaquo;</a></li>
+            {% endif %}
+            
+            <li class="pagination-item disabled"><span class="pagination-link">Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}</span></li>
+            
+            {% if page_obj.has_next %}
+                <li class="pagination-item"><a href="?page={{ page_obj.next_page_number }}{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}" class="pagination-link">&rsaquo;</a></li>
+                <li class="pagination-item"><a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.created_from %}&created_from={{ request.GET.created_from }}{% endif %}{% if request.GET.created_to %}&created_to={{ request.GET.created_to }}{% endif %}" class="pagination-link">&raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Suma wartości -->
+    <div class="cyber-card text-center mt-5">
+        <h4 class="text-light-color">SUMA ZATWIERDZONYCH WNIOSKÓW (BIEŻĄCY MIESIĄC)</h4>
+        <p class="h2 m-0" style="color: var(--secondary-color);">{{ total_approved_value|floatformat:2 }} PLN</p>
+    </div>
 </div>
 {% endblock %}

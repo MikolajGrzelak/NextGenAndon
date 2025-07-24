@@ -1,0 +1,731 @@
+/* =================================================================== */
+/* MOTYW: INDUSTRIAL EDGE (WERSJA: NIGHT SHIFT)      */
+/* =================================================================== */
+
+/* 1. CZCIONKI: Nowa, bardziej techniczna czcionka dla nagłówków */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Exo+2:wght@600;700&display=swap');
+
+/* 2. PALETA KOLORÓW: Ciemniejsza, bardziej industrialna paleta */
+:root {
+    --primary-color: #007bff; /* Bardziej wyrazisty błękit */
+    --secondary-color: #ff6a00; /* Akcent: żywy, industrialny pomarańcz */
+    --background-color: #212529; /* Ciemne, grafitowe tło */
+    --surface-color: #343a40; /* Powierzchnia kart (ciemnoszara) */
+    --text-color: #f8f9fa; /* Jasny, czytelny tekst */
+    --text-light-color: #adb5bd; /* Jaśniejszy tekst dla opisów */
+    --border-color: #495057; /* Ciemniejszy kolor ramek */
+    
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --warning-color: #ffc107;
+
+    --font-primary: 'Exo 2', sans-serif; /* Nowa, wyrazista czcionka nagłówków */
+    --font-secondary: 'Roboto', sans-serif; /* Czytelny tekst główny */
+}
+
+/* 3. STYL GŁÓWNY: Czysty i przejrzysty, bez efektów glitch */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-secondary);
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body::before { content: none; }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
+    color: var(--text-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover { color: var(--secondary-color); }
+
+/* 4. PRZYCISKI: Solidne, z wyraźnym feedbackiem dla użytkownika */
+.btn-cyber {
+    font-family: var(--font-primary);
+    background-color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    color: #ffffff;
+    padding: 12px 25px; /* Zwiększony padding */
+    font-size: 1.1rem; /* Zwiększona czcionka */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+    cursor: pointer;
+}
+
+.btn-cyber:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+}
+
+.btn-cyber.btn-danger {
+    background-color: var(--error-color);
+    border-color: var(--error-color);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
+}
+
+.btn-cyber.btn-danger:hover { box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3); }
+
+.btn-cyber.btn-warning {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: #212529;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+}
+
+.btn-cyber.btn-warning:hover {
+     box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+     color: #212529;
+}
+
+.btn-cyber.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+}
+
+.btn-cyber.btn-success:hover { box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3); }
+
+
+/* 5. FORMULARZE: Czyste i funkcjonalne */
+.form-control-cyber {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 12px;
+    width: 100%;
+    font-family: var(--font-secondary);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.form-control-cyber:focus {
+    outline: none;
+    background-color: #495057;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* 6. KONTENERY I KARTY: Efekt "WOW" przez cienie i subtelne detale */
+.cyber-container {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem;
+    margin-top: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.cyber-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+.cyber-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    border-color: var(--primary-color);
+}
+
+.cyber-card::before, .cyber-card::after { content: none; }
+
+/* 7. PASEK NAWIGACJI: Czysty, "pływający" nad treścią */
+.navbar-cyber {
+    background-color: var(--surface-color);
+    width: 100%;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-cyber .navbar-brand {
+    font-family: var(--font-primary);
+    font-size: 1.8rem;
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+.nav-container, .nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+}
+.nav-container {
+    width: 100%;
+    justify-content: space-between;
+}
+.nav-right { gap: 1.5rem; }
+
+.username-display {
+    font-family: var(--font-secondary);
+    font-weight: 700;
+    color: var(--text-color);
+    white-space: nowrap;
+}
+
+/* 8. ALERTY: Czytelne i zgodne z nową paletą */
+.cyber-alert {
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 5px solid;
+    border-radius: 6px;
+    font-family: var(--font-secondary);
+    font-weight: 400;
+}
+
+.cyber-alert-success {
+    border-color: var(--success-color);
+    color: #c8f5d6;
+    background-color: rgba(40, 167, 69, 0.15);
+}
+
+.cyber-alert-error {
+    border-color: var(--error-color);
+    color: #f8d7da;
+    background-color: rgba(220, 53, 69, 0.15);
+}
+
+.cyber-alert-info {
+    border-color: var(--primary-color);
+    color: #d1e7ff;
+    background-color: rgba(0, 123, 255, 0.15);
+}
+
+/* 9. TABELE: Nowoczesne i czytelne */
+.table-cyber {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-cyber th, .table-cyber td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.table-cyber thead { background-color: #212529; }
+.table-cyber th {
+    font-family: var(--font-primary);
+    color: var(--text-color);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.table-cyber tbody tr:hover { background-color: #495057; }
+.table-cyber tbody tr:last-child td { border-bottom: none; }
+.table-cyber tfoot .table-summary-row td {
+    border-top: 2px solid var(--border-color);
+    background-color: #212529;
+}
+
+/* 10. POWIADOMIENIA: Dopasowane do nowego stylu */
+.notification-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+#notification-icon {
+    font-size: 1.5rem;
+    color: var(--text-light-color);
+    transition: color 0.3s ease;
+}
+#notification-icon:hover { color: var(--primary-color); }
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: var(--font-secondary);
+    border: 2px solid var(--surface-color);
+}
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 15px;
+    width: 350px;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    border-radius: 8px;
+}
+.notification-header {
+    font-family: var(--font-primary);
+    color: var(--text-color);
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+.notification-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.notification-dropdown li {
+    padding: 12px 15px;
+    border-bottom: 1px solid #495057;
+    font-family: var(--font-secondary);
+}
+.notification-dropdown li:last-child { border: none; }
+.notification-dropdown li a { color: var(--text-color); }
+.notification-dropdown li:hover { background-color: #212529; }
+
+/* 11. SIATKA: Pozostaje bez zmian, bo jest uniwersalna */
+.cyber-grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+@media (max-width: 1200px) { .cyber-grid-container { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { .cyber-grid-container { grid-template-columns: 1fr; } }
+.col-span-3 {
+    grid-column: span 3 / span 3;
+}
+@media (max-width: 1200px) {
+    .col-span-3 {
+        grid-column: span 2 / span 2;
+    }
+}
+@media (max-width: 768px) {
+    .col-span-3 {
+        grid-column: span 1 / span 1;
+    }
+}
+
+/* 12. AUTOCOMPLETE & ITEM INFO STYLES */
+.suggestions-box {
+    display: none;
+    position: absolute;
+    width: 100%;
+    background-color: #495057;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    z-index: 1050;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.suggestion-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    color: var(--text-light-color);
+    border-bottom: 1px solid var(--border-color);
+}
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+.item-info-card {
+    background-color: #2c3136;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: 100%;
+}
+.item-info-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+}
+.item-info-body p {
+    margin-bottom: 0.75rem;
+    color: var(--text-light-color);
+}
+.item-info-body p strong {
+    color: var(--text-color);
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 13. NEW BUTTON STYLE: OUTLINE */
+.btn-cyber-outline {
+    font-family: var(--font-primary);
+    background-color: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-light-color);
+    padding: 10px 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.btn-cyber-outline:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* 14. INPUT GROUP STYLING */
+.input-group { display: flex; }
+.input-group .form-control-cyber {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    flex-grow: 1;
+}
+.input-group .btn-cyber-outline {
+    border-radius: 0;
+    border-left: none;
+}
+.input-group .btn-cyber-outline:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* 15. STATUS BADGE */
+.status-badge {
+    padding: 0.3em 0.8em;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+.status-badge.status-awaiting_magazyn,
+.status-badge.status-awaiting_dyrektor,
+.status-badge.status-awaiting_cycle,
+.status-badge.status-in_progress,
+.status-badge.status-review,
+.status-badge.status-wip,
+.status-badge.status-printed,
+.status-badge.status-stopped {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffe085;
+}
+.status-badge.status-approved,
+.status-badge.status-closed, 
+.status-badge.status-resolved,
+.status-badge.status-completed {
+    background-color: rgba(40, 167, 69, 0.2);
+    color: #98e0b3;
+}
+.status-badge.status-rejected,
+.status-badge.status-cancelled,
+.status-badge.status-removed {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #f8d7da;
+}
+.status-badge.status-new,
+.status-badge.status-open {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #f8d7da;
+}
+
+
+/* 16. SMALL ACTION BUTTONS */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem; /* Odstęp między przyciskami */
+    justify-content: center;
+}
+
+.btn-cyber-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    font-family: var(--font-primary);
+    border: 2px solid;
+    color: #ffffff;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-cyber-sm:hover {
+    transform: scale(1.1);
+}
+
+.btn-cyber-sm.btn-warning {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: #212529;
+}
+
+.btn-cyber-sm.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-cyber-sm.btn-danger {
+    background-color: var(--error-color);
+    border-color: var(--error-color);
+}
+
+/* 17. DISPLAY BOARD STYLES - NOWA WERSJA */
+.ticket-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+    text-align: left;
+    margin-bottom: 1.5rem; /* Dodatkowy margines na dole */
+}
+.detail-item {
+    font-size: 1.2rem; /* Powiększona czcionka wartości */
+}
+.detail-item-full {
+    grid-column: span 2;
+    font-size: 1.2rem; /* Powiększona czcionka wartości */
+}
+.detail-item strong {
+    display: block;
+    font-size: 1rem; /* Powiększona czcionka etykiety */
+    color: var(--text-light-color);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+}
+.detail-item span {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+/* NOWA, MOCNIEJSZA ANIMACJA */
+@keyframes urgent-pulse {
+  0% {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-color: var(--error-color);
+    transform: scale(1);
+  }
+  50% {
+    background-color: rgba(220, 53, 69, 0.3);
+    border-color: #ff8a8a;
+    transform: scale(1.02);
+  }
+  100% {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-color: var(--error-color);
+    transform: scale(1);
+  }
+}
+
+.blinking-card {
+  animation: urgent-pulse 1.5s infinite;
+}
+
+/* 18. PAGINATION */
+.pagination-nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+.pagination-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.pagination-item {
+    margin: 0 0.25rem;
+}
+.pagination-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-light-color);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+.pagination-item:not(.disabled) .pagination-link:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+.pagination-item.disabled .pagination-link {
+    color: #6c757d;
+    background-color: #2c3136;
+    cursor: not-allowed;
+}
+
+/* 19. FILTERS & MODAL */
+.filter-btn.filter-active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.modal-content {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+.modal-header {
+    border-bottom: 1px solid var(--border-color);
+}
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+}
+.modal-title {
+    font-family: var(--font-primary);
+    color: var(--text-color);
+}
+.comment-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.comment-item:last-child {
+    border-bottom: none;
+}
+.comment-user {
+    color: var(--secondary-color);
+    font-weight: 700;
+}
+
+/* 20. CUSTOM CHECKBOX */
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.custom-checkbox input[type="checkbox"] {
+    display: none; /* Ukryj oryginalny checkbox */
+}
+.custom-checkbox label {
+    position: relative;
+    padding-left: 35px; /* Miejsce na niestandardowy checkbox */
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-light-color);
+}
+.custom-checkbox label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-color);
+    background-color: var(--surface-color);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+.custom-checkbox input[type="checkbox"]:checked + label::before {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.custom-checkbox input[type="checkbox"]:checked + label::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/* 21. CUSTOM FILE INPUT */
+.custom-file-input {
+    display: flex;
+    align-items: center;
+}
+.custom-file-input .btn-cyber-outline {
+    white-space: nowrap;
+}
+
+/* 22. INSTRUCTION LIST */
+.instruction-list {
+    list-style: none;
+    padding-left: 0;
+    font-size: 0.9rem;
+}
+.instruction-list li {
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 0.5rem;
+    color: var(--text-light-color);
+}
+.instruction-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--success-color);
+    font-weight: bold;
+}
+.instruction-list li strong {
+    color: var(--text-color);
+}
+
+/* 23. LARGE TICKET CARDS */
+.ticket-card-large {
+    text-align: center;
+    padding-top: 2.5rem;
+    position: relative;
+}
+.card-icon-top {
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+.ticket-card-large .ticket-details-large p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+.ticket-card-large .ticket-details-large p strong {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+/* 24. CARD STATUS BACKGROUNDS */
+.card-status-open {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+.card-status-in_progress {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+.card-status-resolved, .card-status-closed {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+/* 25. UTILITIES */
+.d-none {
+    display: none !important;
+}

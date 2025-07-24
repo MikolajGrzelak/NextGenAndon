@@ -11,18 +11,18 @@ from django.core.exceptions import ValidationError
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from .models import (
-    SupportTicket, 
-    Item, 
-    QualityReason, 
-    C2MaterialItem, 
-    C2MaterialGroup, 
-    ScrapEntry, 
-    WarehouseRequest, 
-    WarehouseComment, 
-    WarehouseReason, 
-    ProductionLog, 
-    ProductionPlan, 
-    ProductionComment, 
+    SupportTicket,
+    Item,
+    QualityReason,
+    C2MaterialItem,
+    C2MaterialGroup,
+    ScrapEntry,
+    WarehouseRequest,
+    WarehouseComment,
+    WarehouseReason,
+    ProductionLog,
+    ProductionPlan,
+    ProductionComment,
     ProductionOrder,
     Location,
     ScrapCode,
@@ -37,7 +37,7 @@ from django.utils.timezone import now, datetime, make_aware
 from .forms import ScrapEntry, CycleCountRequestForm, ExcelUploadForm
 from django.http import JsonResponse
 from datetime import timedelta, datetime
-from django.db.models import Sum, F, DecimalField, ExpressionWrapper, Max, Q, Count
+from django.db.models import Sum, F, DecimalField, ExpressionWrapper, Max, Q, Count, Case, When, Value, IntegerField
 from django.contrib import messages
 import io
 import base64
@@ -104,53 +104,37 @@ def production_c2(request):
 
 @login_required
 def production_rm5(request):
-    return render(request, "daily_panel.html", {"workplace": "RM5"})
+    return render(request, "daily_panel.html")
 
 @login_required
 def production_b2b(request):
-    return render(request, "daily_panel.html", {"workplace": "B2B"})
+    return render(request, "daily_panel.html")
 
 @login_required
 def production_gaming(request):
-    return render(request, "daily_panel.html", {"workplace": "Gaming"})
+    return render(request, "daily_panel.html")
 
 @login_required
 def production_scancoin(request):
-    return render(request, "daily_panel.html", {"workplace": "ScanCoin"})
+    return render(request, "daily_panel.html")
 
 @login_required
 def production_comestero(request):
-    return render(request, "daily_panel.html", {"workplace": "Comestero"})
+    return render(request, "daily_panel.html")
 
 @login_required
-def daily_panel(request, workplace):
-    # Pobierz miejsce pracy z sesji lub ustaw domyślne
-    workplace = request.session.get("workplace", "Nieznane")
-
-    # Pobierz grupy użytkownika, aby określić role
+def daily_panel(request):
     user = request.user
     group_names = list(user.groups.values_list("name", flat=True))
-
-    # Określ, czy użytkownik jest w grupie "Produkcja" lub "Lider"
     is_produkcja = "Produkcja" in group_names
     is_lider = "Lider" in group_names
-    is_magazyn = "Magazyn" in group_names # Dodano, jeśli potrzebne
-
-    if workplace == "Nieznane":
-        # Logika dla nieprzypisanego miejsca pracy
-        if request.user.is_superuser or is_lider: # Możesz tutaj użyć is_lider
-            workplace = "default_panel"
-        else:
-            messages.error(request, "⚠️ Nie przypisano miejsca pracy. Skontaktuj się z administratorem.")
-            return redirect("index")
+    is_magazyn = "Magazyn" in group_names
 
     return render(request, "daily_panel.html", {
-        "workplace": workplace,
-        "is_produkcja": is_produkcja, # <-- Dodano
-        "is_lider": is_lider,         # <-- Dodano
-        "is_magazyn": is_magazyn,     # <-- Dodano, jeśli potrzebne
+        "is_produkcja": is_produkcja,
+        "is_lider": is_lider,
+        "is_magazyn": is_magazyn,
     })
-
 @login_required
 def index_production(request):
     return render(request, "index_production.html")
@@ -192,7 +176,7 @@ def register_scrap(request):
             item = Item.objects.get(item_code=item_code)
         except Item.DoesNotExist:
             messages.error(request, "❌ Nie znaleziono itemu o podanym numerze. Sprawdź i spróbuj ponownie.")
-            return redirect("register_scrap")  
+            return redirect("register_scrap")
 
         # Sprawdzenie, czy podana ilość jest poprawna
         try:
@@ -228,9 +212,9 @@ def register_scrap(request):
         # Jeśli checkbox był zaznaczony, tworzymy zgłoszenie WarehouseRequest
         if create_warehouse_request:
             WarehouseRequest.objects.create(
-                location=item.production_line,  
+                location=item.production_line,
                 created_by=request.user,
-                category="return",  
+                category="return",
                 warehouse_reason=None,
                 description=f"Automatycznie utworzone ze zgłoszenia odpadu: {item.item_code}",
                 item=item,
@@ -243,7 +227,7 @@ def register_scrap(request):
             SupportTicket.objects.create(
                 category="quality",
                 created_by=request.user,
-                workplace=item.production_line,
+                workplace="Nie dotyczy",
                 description=f"Prośba o zweryfikowanie poprawności stocku dla itemu: {item.item_code}",
                 status="open",
             )
@@ -254,7 +238,7 @@ def register_scrap(request):
     material_groups = C2MaterialGroup.objects.all()
     quality_reasons = QualityReason.objects.all()
     return render(request, "register_scrap.html", {
-        "material_groups": material_groups, 
+        "material_groups": material_groups,
         "quality_reasons": quality_reasons
     })
 
@@ -542,18 +526,12 @@ def logout_success(request):
 
 @login_required
 def call_quality(request):
-    workplace = request.session.get("workplace", "Nieznane")
-
-    if workplace == "Nieznane":
-        messages.error(request, "Nie wybrano miejsca pracy. Wybierz je przed zgłoszeniem problemu.")
-        return redirect("index_production")
-
     if request.method == "POST":
         description = request.POST.get("description", "Brak opisu")
         ticket = SupportTicket.objects.create(
             category="quality",
             created_by=request.user,
-            workplace=workplace,
+            workplace="Nie dotyczy",
             description=description,
             status="open",
         )
@@ -566,22 +544,16 @@ def call_quality(request):
         messages.success(request, "Zgłoszenie do technika zostało wysłane!")
         return redirect("display_board", category="quality")
 
-    return render(request, "call_quality.html", {"workplace": workplace})
+    return render(request, "call_quality.html")
 
 @login_required
 def call_technician(request):
-    workplace = request.session.get("workplace", "Nieznane")
-
-    if workplace == "Nieznane":
-        messages.error(request, "Nie wybrano miejsca pracy. Wybierz je przed zgłoszeniem problemu.")
-        return redirect("index_production")
-
     if request.method == "POST":
         description = request.POST.get("description", "Brak opisu")
         ticket = SupportTicket.objects.create(
             category="technician",
             created_by=request.user,
-            workplace=workplace,
+            workplace="Nie dotyczy",
             description=description,
             status="open",
         )
@@ -594,22 +566,16 @@ def call_technician(request):
         messages.success(request, "Zgłoszenie do technika zostało wysłane!")
         return redirect("display_board", category="technician")
 
-    return render(request, "call_technician.html", {"workplace": workplace})
+    return render(request, "call_technician.html")
 
 @login_required
 def call_engineer(request):
-    workplace = request.session.get("workplace", "Nieznane")
-
-    if workplace == "Nieznane":
-        messages.error(request, "Nie wybrano miejsca pracy. Wybierz je przed zgłoszeniem problemu.")
-        return redirect("index_production")
-
     if request.method == "POST":
         description = request.POST.get("description", "Brak opisu")  # Domyślny opis
         ticket = SupportTicket.objects.create(
             category="engineer",
             created_by=request.user,
-            workplace=workplace,
+            workplace="Nie dotyczy",
             description=description,
             status="open",
         )
@@ -622,19 +588,28 @@ def call_engineer(request):
         messages.success(request, "Zgłoszenie do inżyniera zostało wysłane!")
         return redirect("display_board", category="engineer")
 
-    return render(request, "call_engineer.html", {"workplace": workplace})
+    return render(request, "call_engineer.html")
 
 @login_required
 def display_board(request, category):
+    # Define the desired order for statuses
+    status_order = Case(
+        When(status='open', then=Value(1)),
+        When(status='in_progress', then=Value(2)),
+        default=Value(3),
+        output_field=IntegerField()
+    )
+
+    # Get all relevant tickets
     tickets = SupportTicket.objects.filter(
-    category=category
-).filter(
-    status__in=["open", "in_progress"]
-) | SupportTicket.objects.filter(
-    category=category, 
-    status="resolved", 
-    resolved_at__gt=TWO_DAYS_AGO
-).order_by("-created_at")
+        category=category
+    ).filter(
+        Q(status__in=["open", "in_progress"]) | 
+        Q(status="resolved", resolved_at__gt=TWO_DAYS_AGO)
+    ).annotate(
+        status_order=status_order
+    ).order_by('status_order', '-created_at')
+    
     return render(request, "display_board.html", {"tickets": tickets, "category": category})
 
 @login_required
@@ -659,22 +634,6 @@ def close_ticket(request, ticket_id):
 
 def register_scrap_success(request):
     return render(request, "register_scrap_success.html")
-
-@login_required
-def set_workplace(request, workplace):
-    """
-    Ustawia miejsce pracy użytkownika na podstawie wybranego gniazda lub linii.
-    """
-    request.session["workplace"] = workplace  # Zapisz w sesji
-    messages.success(request, f"Wybrano miejsce pracy: {workplace}")
-    return redirect("daily_panel", workplace=workplace)  # Przekierowanie poprawione
-
-def reset_workplace(request):
-    """
-    Resetuje miejsce pracy użytkownika i przekierowuje do wyboru nowego miejsca (index_production).
-    """
-    request.session["workplace"] = None
-    return redirect("index_production")  # Przekierowanie do wyboru miejsca pracy
 
 def autocomplete_item(request):
     query = request.GET.get("query", "").strip()
@@ -712,7 +671,7 @@ def call_warehouse(request):
     Formularz zgłoszenia dla magazynu.
     """
     warehouse_reasons = WarehouseReason.objects.all()
-    
+
     if request.method == "POST":
         location = request.POST.get("location")
         description = request.POST.get("description")
@@ -741,7 +700,7 @@ def call_warehouse(request):
             magazyn_group = Group.objects.get(name="Magazyn")
             for user in magazyn_group.user_set.all():
                 create_notification(user, f"Nowe wezwanie do magazynu", url=f"/warehouse-tickets/{WarehouseRequest.id}/")
-            
+
             messages.success(request, "Zgłoszenie zostało wysłane do magazynu.")
             return redirect("warehouse_tickets")
         else:
@@ -857,18 +816,18 @@ def upload_production_log(request):
 # Funkcja generująca wykres porównujący produkcję
 def generate_production_chart(planned_quantities, executed_quantities, labels):
     plt.figure(figsize=(10, 5))
-    
+
     x = range(len(labels))  # Oś X to indeksy MO Numbers
 
     plt.bar(x, planned_quantities, width=0.4, label='Produkcja planowana', color='blue', align='center')
     plt.bar(x, executed_quantities, width=0.4, label='Produkcja wykonana', color='red', align='edge')
-    
+
     plt.xlabel('Zlecenia produkcyjne (MO Number)')
     plt.ylabel('Ilość')
     plt.title('Porównanie planowanej i wykonanej produkcji')
     plt.xticks(x, labels, rotation=45, ha="right")
     plt.legend()
-    
+
     # Zapisz wykres do base64
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
@@ -882,7 +841,7 @@ def generate_production_chart(planned_quantities, executed_quantities, labels):
 def production_report_view(request):
     line = request.GET.get("line", "")
     gpg = request.GET.get("gpg", "")
-    
+
     # Pobierz wszystkie plany produkcji
     plans = ProductionPlan.objects.select_related("production_order__item")
 
@@ -1090,13 +1049,13 @@ def cycle_count_requests(request):
     # Jeśli GET – wyświetlamy formularz
     # i listę istniejących wniosków
     requests_qs = CycleCountRequest.objects.order_by("-created_at")
-    
+
     # Tworzymy listę słowników do szablonu z obliczoną różnicą
     items_for_template = []
     for req in requests_qs:
         diff = req.physical_qty - req.system_qty
         items_for_template.append({
-            "item": req.item,        
+            "item": req.item,
             "location": req.location,
             "system_qty": req.system_qty,
             "physical_qty": req.physical_qty,
@@ -1108,7 +1067,7 @@ def cycle_count_requests(request):
     return render(request, "cycle_count_requests.html", {
         "items": items_for_template
     })
-    
+
 @login_required
 def update_cycle_count_status(request, request_id, status):
     """
@@ -1158,7 +1117,7 @@ def cycle_count_view(request):
     # Pobranie zgłoszeń
     requests = CycleCountRequest.objects.filter(
         # Filtrujemy otwarte lub zamknięte w ciągu ostatnich 30 dni
-        Q(status__in=["new", "review"]) | 
+        Q(status__in=["new", "review"]) |
         Q(status__in=["closed", "removed"], closed_at__gte=cutoff_date)
     ).order_by("-created_at")
 
@@ -1414,7 +1373,7 @@ def inv_request_approve(request, req_id):
 @login_required
 def inv_request_reject(request, req_id):
     """
-    Odrzucenie wniosku na dowolnym etapie. 
+    Odrzucenie wniosku na dowolnym etapie.
     """
     inv_req = get_object_or_404(InvRequest, id=req_id)
 

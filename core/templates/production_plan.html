@@ -1,97 +1,89 @@
 {% extends "base.html" %}
+{% block title %}PLAN PRODUKCJI{% endblock %}
+
 {% block content %}
-
-<style>
-  /* Kolorowanie wierszy przez <td>, by nadpisać table-striped */
-  .row-new td { background-color: #ffffff !important; }
-  .row-in_progress td { background-color: #ffa500 !important; }
-  .row-wip td { background-color: #add8e6 !important; }
-  .row-printed td { background-color: #ffffcc !important; }
-  .row-completed td { background-color: #90ee90 !important; }
-  .row-stopped td { background-color: #ff9999 !important; }
-
-  /* Podświetlenie aktywnego przycisku filtra */
-  .filter-active {
-    background-color: #6c757d !important; 
-    color: #fff !important;
-    border-color: #6c757d !important;
-  }
-</style>
-
-<div class="container mt-4">
-    <h2 class="mb-4">📋 Plan Produkcji</h2>
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-calendar-check"></i> PLAN PRODUKCJI</h1>
+        <p class="text-light-color">INTERAKTYWNY PODGLĄD ZLECEŃ PRODUKCYJNYCH</p>
+    </div>
 
     <!-- Filtry -->
-    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-        <button class="btn btn-outline-secondary filter-btn" data-filter="line" data-value="">Wszystkie Linie</button>
-        {% for line in lines %}
-            <button class="btn btn-outline-secondary filter-btn" data-filter="line" data-value="{{ line }}">{{ line }}</button>
-        {% endfor %}
-    </div>
-    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-        <button class="btn btn-outline-secondary filter-btn" data-filter="gpg" data-value="">Wszystkie GPG</button>
-        {% for gpg in gpgs %}
-            <button class="btn btn-outline-secondary filter-btn" data-filter="gpg" data-value="{{ gpg }}">{{ gpg }}</button>
-        {% endfor %}
+    <div class="cyber-card mb-5">
+        <div class="mb-3">
+            <strong class="text-light-color d-block mb-2">FILTRUJ WG. LINII:</strong>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn-cyber-outline filter-btn filter-active" data-filter="line" data-value="">Wszystkie</button>
+                {% for line in lines %}
+                    <button class="btn-cyber-outline filter-btn" data-filter="line" data-value="{{ line }}">{{ line }}</button>
+                {% endfor %}
+            </div>
+        </div>
+        <div>
+            <strong class="text-light-color d-block mb-2">FILTRUJ WG. GPG:</strong>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn-cyber-outline filter-btn filter-active" data-filter="gpg" data-value="">Wszystkie</button>
+                {% for gpg in gpgs %}
+                    <button class="btn-cyber-outline filter-btn" data-filter="gpg" data-value="{{ gpg }}">{{ gpg }}</button>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
     <!-- Tabela wyników -->
-    <table class="table table-striped table-hover" id="planTable">
-        <thead>
-            <tr>
-                <th>Linia</th>
-                <th>GPG</th>
-                <th>MO Number</th>
-                <th>Item Code</th>
-                <th>Opis</th>
-                <th>Planowana</th>
-                <th>Wykonana</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th>Akcje</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Wypełniane przez AJAX -->
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table-cyber" id="planTable">
+            <thead>
+                <tr>
+                    <th>Linia</th>
+                    <th>GPG</th>
+                    <th>MO</th>
+                    <th>Item</th>
+                    <th class="text-center">Plan</th>
+                    <th class="text-center">Wykonanie</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th class="text-center">Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Wypełniane przez AJAX -->
+            </tbody>
+        </table>
+    </div>
 </div>
+
 <!-- Modal do komentarzy -->
-<div class="modal fade" id="commentsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="commentsModal" tabindex="-1" aria-hidden="true" data-bs-theme="dark">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Komentarze</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title"><i class="bi bi-chat-left-text-fill"></i> KOMENTARZE DO ZLECENIA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Sekcja istniejących komentarzy -->
-                <div id="commentsContent">Ładuję komentarze...</div>
-
-                <hr>
-
-                <!-- Sekcja dodawania nowego komentarza -->
-                <h5>Dodaj nowy komentarz</h5>
-                <div class="mb-3">
-                    <textarea class="form-control" id="newCommentText" rows="2" placeholder="Wpisz komentarz..."></textarea>
+                <div id="commentsContent" class="mb-4">
+                    <!-- Istniejące komentarze -->
                 </div>
-                <button class="btn btn-primary" onclick="submitNewComment()">Dodaj</button>
+                <hr style="border-color: var(--border-color);">
+                <h5 class="mt-4 mb-3">DODAJ NOWY KOMENTARZ</h5>
+                <textarea class="form-control-cyber" id="newCommentText" rows="3" placeholder="Wpisz treść komentarza..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cyber-outline" data-bs-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn-cyber" onclick="submitNewComment()">Dodaj komentarz</button>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_scripts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    let currentFilters = {
-        line: "",
-        gpg: "",
-        date: "",
-        status: "",
-        mo_number: "",
-        item_code: ""
-    };
+    let currentFilters = { line: "", gpg: "" };
+    let currentPlanIdForComments = null;
 
     function loadPlanData() {
         $.ajax({
@@ -100,115 +92,106 @@
             dataType: "json",
             success: function(response) {
                 let rows = "";
-                response.results.forEach(function(row) {
-                    let rowClass = getRowClass(row.status);
-                    rows += `
-                        <tr class="${rowClass}">
-                          <td>${row.line}</td>
-                          <td>${row.gpg}</td>
-                          <td>${row.mo_number}</td>
-                          <td>${row.item_code}</td>
-                          <td>${row.description || ""}</td>
-                          <td>${row.planned_quantity}</td>
-                          <td>${row.completed_quantity}</td>
-                          <td>${row.date}</td>
-                          <td>${row.status}</td>
-                          <td>
-                            <button class="btn btn-primary btn-sm" onclick="openEditModal(${row.id})">✏️</button>
-                            <button class="btn btn-secondary btn-sm" onclick="openComments(${row.id})">💬</button>
-                          </td>
-                        </tr>
-                    `;
-                });
+                if (response.results.length > 0) {
+                    response.results.forEach(function(row) {
+                        rows += `
+                            <tr>
+                                <td>${row.line}</td>
+                                <td>${row.gpg}</td>
+                                <td>${row.mo_number}</td>
+                                <td>
+                                    ${row.item_code}
+                                    <br>
+                                    <small class="text-light-color">${row.description || ""}</small>
+                                </td>
+                                <td class="text-center fw-bold">${row.planned_quantity}</td>
+                                <td class="text-center fw-bold">${row.completed_quantity}</td>
+                                <td>${row.date}</td>
+                                <td><span class="status-badge status-${row.status.toLowerCase()}">${row.status}</span></td>
+                                <td class="text-center">
+                                    <div class="action-buttons">
+                                        <button class="btn-cyber-sm" onclick="openComments(${row.id})" title="Komentarze"><i class="bi bi-chat-left-text"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    rows = '<tr><td colspan="9" class="text-center text-light-color py-4">Brak danych dla wybranych filtrów.</td></tr>';
+                }
                 $("#planTable tbody").html(rows);
             },
             error: function() {
-                alert("Błąd pobierania danych planu");
+                $("#planTable tbody").html('<tr><td colspan="9" class="text-center text-danger py-4">Błąd podczas ładowania danych.</td></tr>');
             }
         });
     }
 
-    function getRowClass(status) {
-        switch (status) {
-            case "new": return "row-new";
-            case "in_progress": return "row-in_progress";
-            case "wip": return "row-wip";
-            case "printed": return "row-printed";
-            case "completed": return "row-completed";
-            case "stopped": return "row-stopped";
-            default: return "";
-        }
-    }
-
     function openComments(planId) {
+        currentPlanIdForComments = planId;
         const modal = new bootstrap.Modal(document.getElementById("commentsModal"));
-        $("#commentsContent").html("Ładuję komentarze...");
+        const commentsContent = $("#commentsContent");
+        
+        commentsContent.html('<p class="text-light-color">Ładowanie komentarzy...</p>');
+        modal.show();
+
         $.get(`/get-comments/${planId}/`, function(response) {
             let commentsHtml = "";
-            response.comments.forEach(function(comment) {
-                commentsHtml += `<div class="mb-2"><strong>${comment.user}:</strong> ${comment.text}</div>`;
-            });
-            $("#commentsContent").html(commentsHtml || "Brak komentarzy.");
+            if (response.comments && response.comments.length > 0) {
+                response.comments.forEach(function(comment) {
+                    commentsHtml += `<div class="comment-item"><strong class="comment-user">${comment.user}:</strong> ${comment.text}</div>`;
+                });
+            } else {
+                commentsHtml = '<p class="text-light-color">Brak komentarzy dla tego zlecenia.</p>';
+            }
+            commentsContent.html(commentsHtml);
         });
-        currentOrderIdForComments = planId;
-        modal.show();
     }
 
     function submitNewComment() {
         const commentText = $("#newCommentText").val().trim();
-        if (!commentText) {
-            alert("Komentarz nie może być pusty!");
-            return;
-        }
-    
-        // Wyślij komentarz do serwera
+        if (!commentText) return;
+
         $.ajax({
-            url: `/add-comment/${currentOrderIdForComments}/`, // currentOrderIdForComments odnosi się do ProductionPlan
+            url: `/add-comment/${currentPlanIdForComments}/`,
             method: "POST",
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}"
-            },
-            data: {
-                text: commentText
-            },
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            data: { text: commentText },
             success: function(response) {
                 if (response.success) {
-                    // Dodaj nowy komentarz do listy
-                    const newCommentHtml = `<div class="mb-2"><strong>${response.user}:</strong> ${response.text}</div>`;
-                    $("#commentsContent").append(newCommentHtml);
-    
-                    // Wyczyść pole tekstowe
+                    const newCommentHtml = `<div class="comment-item"><strong class="comment-user">${response.user}:</strong> ${response.text}</div>`;
+                    
+                    if ($("#commentsContent").find('.comment-item').length > 0) {
+                         $("#commentsContent").append(newCommentHtml);
+                    } else {
+                         $("#commentsContent").html(newCommentHtml);
+                    }
+                   
                     $("#newCommentText").val("");
                 } else {
                     alert(response.error || "Nie udało się dodać komentarza.");
                 }
             },
             error: function() {
-                alert("Wystąpił błąd podczas dodawania komentarza.");
+                alert("Wystąpił błąd serwera podczas dodawania komentarza.");
             }
         });
     }
 
     $(document).ready(function() {
-        // Załaduj dane przy pierwszym uruchomieniu
         loadPlanData();
 
-        // Obsługa filtrów
         $(".filter-btn").click(function() {
             const filterType = $(this).data("filter");
             const filterValue = $(this).data("value");
 
-            // Zaktualizuj aktywny filtr
             currentFilters[filterType] = filterValue;
 
-            // Podświetl aktywny przycisk
             $(`.filter-btn[data-filter="${filterType}"]`).removeClass("filter-active");
             $(this).addClass("filter-active");
 
-            // Załaduj dane z nowymi filtrami
             loadPlanData();
         });
     });
 </script>
-
 {% endblock %}

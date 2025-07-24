@@ -1,82 +1,61 @@
 {% extends "base.html" %}
+{% block title %}TABLICA ZGŁOSZEŃ DO MAGAZYNU{% endblock %}
+
+{% block extra_head %}
+<!-- Auto-odświeżanie strony co 10 sekund -->
+<meta http-equiv="refresh" content="10">
+{% endblock %}
+
 {% block content %}
+<div class="cyber-container">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-display"></i> TABLICA ZGŁOSZEŃ DO MAGAZYNU</h1>
+            <p class="text-light-color m-0">MONITORING ZGŁOSZEŃ LOGISTYCZNYCH W CZASIE RZECZYWISTYM</p>
+        </div>
+        <a href="{% url 'call_warehouse' %}" class="btn-cyber btn-success">
+            <i class="bi bi-plus-circle"></i> NOWE ZGŁOSZENIE
+        </a>
+    </div>
 
-<style>
-    /* Stylizacja dla zgłoszeń */
-    .ticket-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
-    }
+    <div class="row g-4">
+        {% for ticket in tickets %}
+        <div class="col-lg-4 col-md-6">
+            <!-- Dodajemy klasę 'blinking-card' dla nowych zgłoszeń -->
+            <div class="cyber-card h-100 {% if ticket.status == 'new' %}blinking-card{% endif %}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h4 class="mb-0">ZGŁOSZENIE #{{ ticket.id }}</h4>
+                    <span class="status-badge status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span>
+                </div>
+                <p class="text-light-color">{{ ticket.get_location_display }}</p>
+                <hr class="my-3" style="border-color: var(--border-color);">
+                
+                <div class="ticket-details">
+                    <p><strong>Komponent:</strong><br>{{ ticket.item.item_code }}</p>
+                    <p><strong>Ilość:</strong> {{ ticket.quantity }} szt.</p>
+                    <p><strong>Opis:</strong><br>{{ ticket.description|default:"Brak opisu." }}</p>
+                </div>
 
-    /* Domyślny styl zgłoszeń */
-    .ticket {
-        padding: 20px;
-        border-radius: 10px;
-        width: 30%;
-        min-width: 300px;
-        transition: border-color 0.5s ease-in-out;
-    }
-
-    /* Kolor dla nowego zgłoszenia */
-    .status-new {
-        background-color: #f8d7da;
-        border: 3px solid transparent;
-    }
-
-    /* Efekt mrugania dla nowych zgłoszeń */
-    @keyframes pulse {
-        0% { border-color: #ff5757; }
-        50% { border-color: #ffebeb; }
-        100% { border-color: #ff5757; }
-    }
-
-    .blinking {
-        animation: pulse 1.2s infinite alternate;
-    }
-
-    /* Kolor dla zgłoszeń w realizacji / zamkniętych */
-    .status-in_progress, .status-resolved {
-        background-color: rgb(255, 255, 255); /* Białe tło */
-    }
-</style>
-
-<div class="ticket-container">
-    {% for ticket in tickets %}
-        <div class="ticket 
-                    {% if ticket.status == 'new' %}status-new blinking{% endif %}
-                    {% if ticket.status == 'in_progress' %}status-in_progress{% endif %}
-                    {% if ticket.status == 'resolved' %}status-resolved{% endif %}">
-            <p><strong>Lokalizacja:</strong> {{ ticket.get_location_display }}</p>
-            <p><strong>Item:</strong> {{ ticket.item.item_code }}</p>
-            <p><strong>Ilość:</strong> {{ ticket.quantity }}</p>
-            <p><strong>Opis:</strong> {{ ticket.description }}</p>
-            <p><strong>Status:</strong> {{ ticket.get_status_display }}</p>
-
-            <div class="ticket-buttons">
-                <a href="{% url 'warehouse_ticket_detail' ticket.id %}" class="btn btn-comment">
-                    💬 Zobacz i dodaj komentarz
-                </a>
-
-                {% if ticket.status == "new" %}
-                    <a href="{% url 'take_warehouse_ticket' ticket.id %}" class="btn btn-warning">🔄 Podejmij</a>
-                {% elif ticket.status == "in_progress" %}
-                    <a href="{% url 'close_warehouse_ticket' ticket.id %}" class="btn btn-success">✅ Zamknij</a>
-                {% endif %}
+                <div class="mt-auto pt-3 d-flex flex-column gap-2">
+                    <a href="{% url 'warehouse_ticket_detail' ticket.id %}" class="btn-cyber-outline w-100">
+                        <i class="bi bi-chat-left-text"></i> Zobacz / Komentuj
+                    </a>
+                    {% if ticket.status == "new" %}
+                        <a href="{% url 'take_warehouse_ticket' ticket.id %}" class="btn-cyber btn-warning w-100">Podejmij</a>
+                    {% elif ticket.status == "in_progress" %}
+                        <a href="{% url 'close_warehouse_ticket' ticket.id %}" class="btn-cyber btn-success w-100">Zamknij</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    {% empty %}
-        <p>Brak zgłoszeń.</p>
-    {% endfor %}
+        {% empty %}
+        <div class="col">
+            <div class="cyber-card text-center py-5">
+                <h2 class="text-light-color"><i class="bi bi-check-circle"></i> BRAK AKTYWNYCH ZGŁOSZEŃ</h2>
+                <p>System nie wykrył żadnych zgłoszeń do magazynu.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
-
-
-<!-- Odświeżanie strony co 5 sekund -->
-<script>
-    setTimeout(function() {
-        location.reload();
-    }, 5000);
-</script>
-
 {% endblock %}

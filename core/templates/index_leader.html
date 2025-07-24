@@ -1,51 +1,115 @@
 {% extends "base.html" %}
+{% block title %}TERMINAL LIDERA{% endblock %}
+
 {% block content %}
-
-<div class="container text-center mt-5">
-    <h2 class="mb-4">📋 Panel Lidera</h2>
-    
-    <div class="row mt-4">
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'call_technician' %}" class="btn btn-danger w-100 p-3">🔧 Wezwij Technika</a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'call_engineer' %}" class="btn btn-warning w-100 p-3">🛠️ Wezwij Inżyniera</a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'call_quality' %}" class="btn btn-info w-100 p-3">🏅 Wezwij Jakość</a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'register_scrap' %}" class="btn btn-dark w-100 p-3">🗑️ Zgłoś Scrap</a>
-        </div>
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-person-workspace"></i> TERMINAL LIDERA</h1>
+        <p class="text-light-color">CENTRUM ZARZĄDZANIA ZESPOŁEM I ZASOBAMI</p>
     </div>
 
-    <!-- Nowe przyciski dla magazynu -->
-    <div class="row mt-4">
-        <div class="col-md-6 mb-3">
-            <a href="{% url 'call_warehouse' %}" class="btn btn-secondary w-100 p-3">📦 Wezwij Magazyn</a>
-        </div>
-        <div class="col-md-6 mb-3">
-            <a href="{% url 'warehouse_tickets' %}" class="btn btn-success w-100 p-3">📋 Tablica Zgłoszeń Magazynu</a>
-        </div>
+    <!-- Sekcja Wezwań i Zgłoszeń -->
+    <h3 class="mb-4">WEZWANIA I ZGŁOSZENIA</h3>
+    <div class="cyber-grid-container mb-5">
+        <a href="{% url 'call_technician' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--error-color);">
+                    <i class="bi bi-wrench-adjustable-circle-fill"></i>
+                </div>
+                <h3>WEZWIJ TECHNIKA</h3>
+            </div>
+        </a>
+        <a href="{% url 'call_engineer' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--warning-color);">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <h3>WEZWIJ INŻYNIERA</h3>
+            </div>
+        </a>
+        <a href="{% url 'call_quality' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--primary-color);">
+                    <i class="bi bi-patch-check-fill"></i>
+                </div>
+                <h3>WEZWIJ JAKOŚĆ</h3>
+            </div>
+        </a>
+         <a href="{% url 'call_warehouse' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <h3>WEZWIJ MAGAZYN</h3>
+            </div>
+        </a>
+        <a href="{% url 'register_scrap' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top" style="color: var(--secondary-color);">
+                    <i class="bi bi-trash-fill"></i>
+                </div>
+                <h3>ZGŁOŚ ODPAD</h3>
+            </div>
+        </a>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'display_board' category='technician' %}" class="btn btn-danger w-100 p-3">
-                🔧 Tablica Zgłoszeń Techników
-            </a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'display_board' category='engineer' %}" class="btn btn-warning w-100 p-3">
-                🛠️ Tablica Zgłoszeń Inżynierów
-            </a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{% url 'display_board' category='quality' %}" class="btn btn-info w-100 p-3">
-                🏅 Tablica Jakości
-            </a>
-        </div>
+    <!-- Sekcja Monitoringu -->
+    <h3 class="mb-4">MONITORING I TABLICE</h3>
+    <div class="cyber-grid-container">
+        <a href="{% url 'display_board' category='technician' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <!-- NOWA IKONA: Tablica Techników -->
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 17V7C2 5.89543 2.89543 5 4 5H20C21.1046 5 22 5.89543 22 7V17C22 18.1046 21.1046 19 20 19H4C2.89543 19 2 18.1046 2 17Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 19V22M9 22H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M15.6234 8.28415C15.6234 7.64333 15.1053 7.12524 14.4645 7.12524C13.8237 7.12524 13.3056 7.64333 13.3056 8.28415C13.3056 9.25362 12.833 10.2357 12.0002 10.2357C11.1674 10.2357 10.6948 9.25362 10.6948 8.28415C10.6948 7.64333 10.1767 7.12524 9.53589 7.12524C8.89507 7.12524 8.37695 7.64333 8.37695 8.28415V12.5415C8.37695 13.1823 8.89507 13.7004 9.53589 13.7004H14.4645C15.1053 13.7004 15.6234 13.1823 15.6234 12.5415V8.28415Z" stroke="#ffc107" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <h3>TABLICA TECHNIKÓW</h3>
+            </div>
+        </a>
+        <a href="{% url 'display_board' category='engineer' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <!-- NOWA IKONA: Tablica Inżynierów -->
+                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 17V7C2 5.89543 2.89543 5 4 5H20C21.1046 5 22 5.89543 22 7V17C22 18.1046 21.1046 19 20 19H4C2.89543 19 2 18.1046 2 17Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 19V22M9 22H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M12 13C13.6569 13 15 11.6569 15 10C15 8.34315 13.6569 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13Z" stroke="#dc3545" stroke-width="1.5"/>
+                        <path d="M12 7V5.5M12 14.5V13M15 10H16.5M7.5 10H9M14.1213 7.87868L15.182 6.81802M8.81802 12.182L7.75736 13.2426M14.1213 12.1213L15.182 13.182M8.81802 7.81802L7.75736 6.75736" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3>TABLICA INŻYNIERÓW</h3>
+            </div>
+        </a>
+        <a href="{% url 'display_board' category='quality' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <!-- NOWA IKONA: Tablica Jakości -->
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 17V7C2 5.89543 2.89543 5 4 5H20C21.1046 5 22 5.89543 22 7V17C22 18.1046 21.1046 19 20 19H4C2.89543 19 2 18.1046 2 17Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 19V22M9 22H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M8.5 13.5L10.5 15.5L15.5 9.5" stroke="#28a745" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>TABLICA JAKOŚCI</h3>
+            </div>
+        </a>
+        <a href="{% url 'warehouse_tickets' %}" class="text-decoration-none">
+            <div class="cyber-card text-center ticket-card-large">
+                <div class="card-icon-top">
+                    <!-- NOWA IKONA: Tablica Magazynu -->
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 17V7C2 5.89543 2.89543 5 4 5H20C21.1046 5 22 5.89543 22 7V17C22 18.1046 21.1046 19 20 19H4C2.89543 19 2 18.1046 2 17Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 19V22M9 22H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M7 14L12 11L17 14M7 10L12 7L17 10" stroke="#007bff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 11V7" stroke="#007bff" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3>TABLICA MAGAZYNU</h3>
+            </div>
+        </a>
     </div>
 </div>
-
 {% endblock %}

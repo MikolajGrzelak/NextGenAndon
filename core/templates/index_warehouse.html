@@ -1,53 +1,43 @@
 {% extends "base.html" %}
+{% block title %}TERMINAL MAGAZYNU{% endblock %}
+
 {% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-hdd-stack-fill"></i> TERMINAL MAGAZYNU</h1>
+        <p class="text-light-color">ZARZĄDZANIE LOGISTYKĄ I STANAMI MAGAZYNOWYMI</p>
+    </div>
 
-<div class="container mt-4">
-    <h2>🏪 Panel Magazynu</h2>
-    
-    <div class="row mt-4">
-        <!-- 🏪 Sekcja 1: Zgłoszenia produkcji do magazynu -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    📦 Zgłoszenia magazynowe (Warehouse Requests)
-                </div>
-                <div class="card-body">
-                    <p>Monitoruj i zarządzaj zgłoszeniami magazynowymi od produkcji.</p>
-                    <a href="{% url 'warehouse_tickets' %}" class="btn btn-primary">📋 Przejdź do zgłoszeń</a>
-                    <a href="{% url 'call_warehouse' %}" class="btn btn-info">➕ Nowe zgłoszenie</a>
-                </div>
+    <div class="cyber-grid-container">
+        <!-- Sekcja 1: Zgłoszenia magazynowe -->
+        <div class="cyber-card">
+            <h3 class="mb-3"><i class="bi bi-box-seam"></i> ZGŁOSZENIA PRODUKCYJNE</h3>
+            <p class="text-light-color mb-4">Monitoruj i zarządzaj zgłoszeniami od zespołów produkcyjnych.</p>
+            <div class="mt-auto d-flex gap-3">
+                <a href="{% url 'warehouse_tickets' %}" class="btn-cyber flex-grow-1">PRZEJDŹ DO TABLICY</a>
+                <a href="{% url 'call_warehouse' %}" class="btn-cyber-outline"><i class="bi bi-plus-lg"></i></a>
             </div>
         </div>
 
-        <!-- 🛠️ Sekcja 2: Wnioski inwentaryzacyjne -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    📝 Wnioski inwentaryzacyjne (Inventory Requests)
-                </div>
-                <div class="card-body">
-                    <p>Dodawaj i zatwierdzaj wnioski o modyfikację stanów magazynowych.</p>
-                    <a href="{% url 'inv_request_list' %}" class="btn btn-success">📋 Lista wniosków</a>
-                    <a href="{% url 'inv_request_create' %}" class="btn btn-info">➕ Nowy wniosek</a>
-                </div>
+        <!-- Sekcja 2: Wnioski inwentaryzacyjne -->
+        <div class="cyber-card">
+            <h3 class="mb-3"><i class="bi bi-file-earmark-diff-fill"></i> WNIOSKI INWENTARYZACYJNE</h3>
+            <p class="text-light-color mb-4">Zarządzaj wnioskami o modyfikację stanów magazynowych.</p>
+            <div class="mt-auto d-flex gap-3">
+                <a href="{% url 'inv_request_list' %}" class="btn-cyber flex-grow-1">LISTA WNIOSKÓW</a>
+                <a href="{% url 'inv_request_create' %}" class="btn-cyber-outline"><i class="bi bi-plus-lg"></i></a>
             </div>
         </div>
 
-        <!-- 🔄 Sekcja 3: Cycle Count (Przeliczanie stanów) -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-warning text-dark">
-                    🔄 Wnioski o przeliczenie (Cycle Count)
-                </div>
-                <div class="card-body">
-                    <p>Zgłaszaj niezgodności i zarządzaj przeliczeniami stanów.</p>
-                    <a href="{% url 'cycle_count_view' %}" class="btn btn-warning">📋 Lista zgłoszeń</a>
-                    <a href="{% url 'cycle_count_requests' %}" class="btn btn-info">➕ Nowe zgłoszenie</a>
-                </div>
+        <!-- Sekcja 3: Cycle Count -->
+        <div class="cyber-card">
+            <h3 class="mb-3"><i class="bi bi-arrow-repeat"></i> CYCLE COUNT</h3>
+            <p class="text-light-color mb-4">Zgłaszaj i weryfikuj niezgodności w stanach magazynowych.</p>
+            <div class="mt-auto d-flex gap-3">
+                <a href="{% url 'cycle_count_view' %}" class="btn-cyber flex-grow-1">LISTA ZGŁOSZEŃ</a>
+                <a href="{% url 'cycle_count_requests' %}" class="btn-cyber-outline"><i class="bi bi-plus-lg"></i></a>
             </div>
         </div>
     </div>
-
 </div>
-
 {% endblock %}

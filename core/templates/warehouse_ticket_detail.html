@@ -1,45 +1,96 @@
 {% extends "base.html" %}
+{% block title %}ZGŁOSZENIE DO MAGAZYNU #{{ ticket.id }}{% endblock %}
+
 {% block content %}
-
-<div class="container mt-4">
-    <h2>📦 Zgłoszenie #{{ ticket.id }}</h2>
-    <p><strong>Tytuł:</strong> {{ ticket.title }}</p>
-    <p><strong>Miejsce pracy:</strong> {{ ticket.workplace }}</p>
-    <p><strong>Item:</strong> {{ ticket.item.item_code }} - {{ ticket.item.description }}</p>
-    <p><strong>Opis:</strong> {{ ticket.description }}</p>
-    <p><strong>Status:</strong> {{ ticket.get_status_display }}</p>
-
-    <h3>💬 Komentarze</h3>
-    <div id="comments-section">
-        {% for comment in ticket.comments.all %}
-            <p><strong>{{ comment.created_by }}</strong>: {{ comment.text }} <small>({{ comment.created_at }})</small></p>
-        {% endfor %}
+<div class="cyber-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-box-seam"></i> ZGŁOSZENIE DO MAGAZYNU #{{ ticket.id }}</h1>
+            <p class="text-light-color m-0">SZCZEGÓŁY ZGŁOSZENIA LOGISTYCZNEGO</p>
+        </div>
+        <a href="{% url 'warehouse_tickets' %}" class="btn-cyber-outline">POWRÓT DO TABLICY</a>
     </div>
 
-    <form id="comment-form" method="POST">
-        {% csrf_token %}
-        <textarea id="comment-text" name="text" class="form-control" placeholder="Dodaj komentarz..." required></textarea>
-        <button type="submit" class="btn btn-primary mt-2">💾 Dodaj komentarz</button>
-    </form>
-</div>
+    <div class="row gx-5">
+        <!-- Lewa kolumna: Szczegóły zgłoszenia -->
+        <div class="col-lg-6">
+            <div class="cyber-card h-100">
+                <h4 class="mb-4">DANE ZGŁOSZENIA</h4>
+                <div class="ticket-details">
+                    <p><strong>Status:</strong> <span class="status-badge status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span></p>
+                    <p><strong>Lokalizacja:</strong> {{ ticket.get_location_display }}</p>
+                    <p><strong>Zgłaszający:</strong> {{ ticket.created_by.username }}</p>
+                    <p><strong>Data utworzenia:</strong> {{ ticket.created_at|date:"Y-m-d H:i" }}</p>
+                    {% if ticket.handled_by %}
+                    <p><strong>Obsługiwane przez:</strong> {{ ticket.handled_by.username }}</p>
+                    <p><strong>Data podjęcia:</strong> {{ ticket.handled_at|date:"Y-m-d H:i" }}</p>
+                    {% endif %}
+                    <hr class="my-3" style="border-color: var(--border-color);">
+                    <p><strong>Komponent:</strong><br>{{ ticket.item.item_code }} - {{ ticket.item.description }}</p>
+                    <p><strong>Ilość:</strong> {{ ticket.quantity }} szt.</p>
+                    <p><strong>Opis:</strong><br>{{ ticket.description }}</p>
+                </div>
+            </div>
+        </div>
 
+        <!-- Prawa kolumna: Komentarze -->
+        <div class="col-lg-6 mt-5 mt-lg-0">
+            <div class="cyber-card h-100">
+                <h4 class="mb-4">KOMENTARZE</h4>
+                <div id="comments-section" class="mb-4">
+                    {% for comment in ticket.comments.all %}
+                        <div class="comment-item">
+                            <strong class="comment-user">{{ comment.created_by.username }}</strong> ({{ comment.created_at|date:"Y-m-d H:i" }}):
+                            <p class="m-0 text-light-color">{{ comment.text }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-light-color">Brak komentarzy.</p>
+                    {% endfor %}
+                </div>
+                <div class="mt-auto">
+                    <form id="comment-form" method="POST">
+                        {% csrf_token %}
+                        <textarea id="comment-text" name="text" class="form-control-cyber" placeholder="Dodaj komentarz..." required rows="3"></textarea>
+                        <button type="submit" class="btn-cyber w-100 mt-3">DODAJ KOMENTARZ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $("#comment-form").submit(function(event) {
         event.preventDefault();
+        let commentText = $("#comment-text").val().trim();
+        if (!commentText) return;
+
         $.ajax({
             url: "{% url 'add_warehouse_comment' ticket.id %}",
             method: "POST",
             data: {
-                text: $("#comment-text").val(),
+                text: commentText,
                 csrfmiddlewaretoken: "{{ csrf_token }}"
             },
             dataType: "json",
             success: function(data) {
-                $("#comments-section").append(
-                    `<p><strong>${data.user}</strong>: ${data.text} <small>(${data.created_at})</small></p>`
-                );
-                $("#comment-text").val("");
+                // Usuń wiadomość "Brak komentarzy", jeśli istnieje
+                if ($("#comments-section").find('.comment-item').length === 0) {
+                    $("#comments-section").html('');
+                }
+
+                // Dodaj nowy komentarz
+                const newCommentHtml = `
+                    <div class="comment-item">
+                        <strong class="comment-user">${data.user}</strong> (${data.created_at}):
+                        <p class="m-0 text-light-color">${data.text}</p>
+                    </div>
+                `;
+                $("#comments-section").append(newCommentHtml);
+                $("#comment-text").val(""); // Wyczyść pole tekstowe
             },
             error: function(xhr, status, error) {
                 alert("Błąd przy dodawaniu komentarza: " + xhr.responseText);
@@ -47,5 +98,4 @@
         });
     });
 </script>
-
 {% endblock %}

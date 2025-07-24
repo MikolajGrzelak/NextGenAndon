@@ -1,63 +1,93 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="container mt-4">
-    <h2>📂 Wgraj Statusy Zleceń</h2>
+{% block title %}WGRAJ STATUS ZLECEŃ{% endblock %}
 
-    <!-- Wizualna wskazówka - jak powinien wyglądać plik Excel -->
-    <div class="alert alert-info">
-        <p>Twój plik Excel powinien zawierać następujące kolumny:</p>
-        <table class="table table-bordered bg-white">
-            <thead>
-                <tr>
-                    <th>MO Number</th>
-                    <th>Item Code</th>
-                    <th>Planned Quantity</th>
-                    <th>Completed Quantity</th>
-                    <th>MO Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>MO12345</td>
-                    <td>ITEM001</td>
-                    <td>100</td>
-                    <td>80</td>
-                    <td>20</td>
-                </tr>
-                <tr>
-                    <td>MO12346</td>
-                    <td>ITEM002</td>
-                    <td>200</td>
-                    <td>200</td>
-                    <td>99</td>
-                </tr>
-            </tbody>
-        </table>
-        <p>Wskazówki:</p>
-        <ul>
-            <li><strong>MO Number</strong>: Numer zlecenia (np. MO12345)</li>
-            <li><strong>Item Code</strong>: Kod produktu z bazy Item (np. ITEM001)</li>
-            <li><strong>Planned Quantity</strong>: Łączna ilość zaplanowana</li>
-            <li><strong>Completed Quantity</strong>: Ilość faktycznie wykonana</li>
-            <li><strong>MO Status</strong>: Kod statusu zlecenia (np. "60" = W realizacji)</li>
+{% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-cloud-upload-fill"></i> WGRAJ STATUS ZLECEŃ</h1>
+        <p class="text-light-color">ZAŁADUJ PLIK EXCEL (.XLSX) Z AKTUALNYM STATUSEM ZLECEŃ</p>
+    </div>
+
+    <!-- Krok 1: Instrukcje -->
+    <div class="cyber-card mb-5">
+        <h3 class="mb-3">KROK 1: PRZYGOTUJ PLIK</h3>
+        <p class="text-light-color">Plik Excel musi zawierać następujące kolumny:</p>
+        <div class="table-responsive">
+            <table class="table-cyber">
+                <thead>
+                    <tr>
+                        <th>MO Number</th>
+                        <th>Item</th>
+                        <th>MO Quantity</th>
+                        <th>Produced Quantity</th>
+                        <th>MO Status</th>
+                    </tr>
+                </thead>
+                <!-- Dodane przykładowe dane -->
+                <tbody>
+                    <tr>
+                        <td>MO12345</td>
+                        <td>ITEM001</td>
+                        <td>100</td>
+                        <td>80</td>
+                        <td>In Progress</td>
+                    </tr>
+                    <tr>
+                        <td>MO12346</td>
+                        <td>ITEM002</td>
+                        <td>200</td>
+                        <td>200</td>
+                        <td>Completed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ul class="instruction-list mt-3">
+            <li><strong>MO Number</strong>: Numer zlecenia produkcyjnego.</li>
+            <li><strong>Item</strong>: Kod produktu (komponentu).</li>
+            <li><strong>MO Quantity</strong>: Łączna ilość zaplanowana.</li>
+            <li><strong>Produced Quantity</strong>: Ilość faktycznie wykonana.</li>
+            <li><strong>MO Status</strong>: Status zlecenia.</li>
         </ul>
     </div>
 
-    {% if messages %}
-    <div class="alert alert-info">
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-    {% endif %}
+    <!-- Krok 2: Formularz do wgrywania -->
+    <div class="cyber-card">
+        <h3 class="mb-4">KROK 2: WYBIERZ I WGRAJ PLIK</h3>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="cyber-alert cyber-alert-info mb-4">
+                    <p class="m-0">{{ message }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="file" class="form-label">Plik (.xlsx):</label>
-            <input type="file" id="file" name="file" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary">📤 Wgraj</button>
-    </form>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="file" class="form-label">PLIK ZE STATUSAMI (.XLSX):</label>
+                <div class="custom-file-input">
+                    <input type="file" id="file" name="file" class="d-none" required accept=".xlsx,.xls">
+                    <label for="file" class="btn-cyber-outline">
+                        <i class="bi bi-file-earmark-arrow-up"></i> WYBIERZ PLIK
+                    </label>
+                    <span id="file-chosen" class="text-light-color ms-3">Nie wybrano pliku</span>
+                </div>
+            </div>
+            <div class="d-grid mt-5">
+                <button type="submit" class="btn-cyber btn-warning">WGRAJ I ZAKTUALIZUJ STATUSY</button>
+            </div>
+        </form>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.getElementById('file').addEventListener('change', function(){
+      const fileName = this.files[0] ? this.files[0].name : 'Nie wybrano pliku';
+      document.getElementById('file-chosen').textContent = fileName;
+    });
+</script>
 {% endblock %}

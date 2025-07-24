@@ -1,103 +1,85 @@
-<!-- filepath: c:\Users\Mikolaj.Grzelak\AppData\Local\Programs\Python\VisualPlan\core\templates\register_scrap.html -->
 {% extends "base.html" %}
-{% block content %}
+{% block title %}REJESTRACJA ODPADU{% endblock %}
 
-<div class="container mt-5">
-    <h2 class="mb-4">🗑️ Rejestracja odpadu</h2>
+{% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-trash3-fill"></i> REJESTRACJA ODPADU</h1>
+        <p class="text-light-color">FORMULARZ ZGŁOSZENIA ODPADU MATERIAŁOWEGO</p>
+    </div>
 
     <form method="POST" action="{% url 'register_scrap' %}">
         {% csrf_token %}
-
-        <div class="row">
-            <!-- Lewa strona: Formularz -->
-            <div class="col-md-6">
-                <div class="mb-3 position-relative">
-                    <label for="item_code" class="form-label">📦 Podaj numer itemu:</label>
-                    <input type="text" id="item_code" name="item_code" class="form-control" required autocomplete="off">
-                    <div id="suggestions" class="suggestions-box"></div> 
+        <div class="row gx-5">
+            <!-- Lewa kolumna: Główny formularz -->
+            <div class="col-lg-7">
+                <div class="mb-4 position-relative">
+                    <label for="item_code" class="form-label">KOD KOMPONENTU:</label>
+                    <input type="text" id="item_code" name="item_code" class="form-control-cyber" required autocomplete="off">
+                    <div id="suggestions" class="suggestions-box"></div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="quantity" class="form-label">🔢 Ilość:</label>
+                <div class="mb-4">
+                    <label for="quantity" class="form-label">ILOŚĆ:</label>
                     <div class="input-group">
-                        <input type="number" id="quantity" name="quantity" class="form-control" required>
-                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="1">1 szt</button>
-                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="3">3 szt</button>
-                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="5">5 szt</button>
-                        <button type="button" class="btn btn-outline-secondary quantity-btn" data-value="10">10 szt</button>
+                        <input type="number" id="quantity" name="quantity" class="form-control-cyber" required>
+                        <button type="button" class="btn-cyber-outline quantity-btn" data-value="1">1</button>
+                        <button type="button" class="btn-cyber-outline quantity-btn" data-value="3">3</button>
+                        <button type="button" class="btn-cyber-outline quantity-btn" data-value="5">5</button>
+                        <button type="button" class="btn-cyber-outline quantity-btn" data-value="10">10</button>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="quality_reason" class="form-label">⚠️ Powód odpadów:</label>
-                    <select id="quality_reason" name="quality_reason" class="form-select" required>
+                <div class="mb-4">
+                    <label for="quality_reason" class="form-label">POWÓD ODPADU:</label>
+                    <select id="quality_reason" name="quality_reason" class="form-control-cyber" required>
                         <option value="" selected disabled>Wybierz powód...</option>
                         {% for reason in quality_reasons %}
                             <option value="{{ reason.id }}">{{ reason.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
+                
+                <hr class="my-4" style="border-color: var(--border-color);">
 
-                <!-- Checkbox do automatycznego tworzenia zgłoszenia magazynowego -->
-                <div class="mb-3 form-check">
-                    <input type="checkbox" id="create_warehouse_request" name="create_warehouse_request" class="form-check-input">
-                    <label for="create_warehouse_request" class="form-check-label">📦 Utwórz zgłoszenie magazynowe</label>
+                <div class="mb-3">
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="create_warehouse_request" name="create_warehouse_request">
+                        <label for="create_warehouse_request">Automatycznie utwórz zgłoszenie zwrotu na magazyn</label>
+                    </div>
                 </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" id="create_quality_request" name="create_quality_request" class="form-check-input">
-                    <label for="create_quality_request" class="form-check-label">📋 Weryfikacja stocku przez Jakość</label>
+                <div class="mb-4">
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="create_quality_request" name="create_quality_request">
+                        <label for="create_quality_request">Automatycznie utwórz wniosek o weryfikację stanu przez Jakość</label>
+                    </div>
                 </div>
 
-                <div class="d-flex gap-2 mt-3">
-                    <button type="submit" class="btn btn-danger">🗑️ Zarejestruj odpad</button>
-                    {% if request.session.workplace %}
-                        <a href="{% url 'daily_panel' workplace=request.session.workplace %}" class="btn btn-secondary">🔙 Powrót</a>
-                    {% else %}
-                        <a href="{% url 'index' %}" class="btn btn-warning">🏠 Strona główna</a>
-                    {% endif %}
+                <div class="d-flex gap-3 mt-5">
+                    <button type="submit" class="btn-cyber btn-danger flex-grow-1">ZAREJESTRUJ ODPAD</button>
+                    <a href="{% url 'daily_panel' %}" class="btn-cyber-outline">POWRÓT</a>
                 </div>
             </div>
 
-            <!-- Prawa strona: Kafelki -->
-            <div class="col-md-5 offset-md-1">
-                <h4>📦 Wybierz grupę materiałową dla C2</h4>
-                <div id="material-groups" class="d-flex flex-wrap gap-2">
-                    {% for group in material_groups %}
-                        <button class="btn btn-outline-primary material-group" data-group="{{ group.name }}">{{ group.name }}</button>
-                    {% endfor %}
+            <!-- Prawa kolumna: Szybki wybór dla C2 -->
+            <div class="col-lg-5 mt-5 mt-lg-0">
+                <div class="cyber-card h-100">
+                    <h4 class="mb-3">SZYBKI WYBÓR (C2)</h4>
+                    <p class="text-light-color mb-4">Wybierz grupę, aby wyświetlić listę komponentów.</p>
+                    <div id="material-groups" class="d-flex flex-wrap gap-2 mb-4">
+                        {% for group in material_groups %}
+                            <button class="btn-cyber-outline material-group" data-group="{{ group.name }}">{{ group.name }}</button>
+                        {% endfor %}
+                    </div>
+                    <div id="material-items" class="d-flex flex-column gap-2"></div>
                 </div>
-
-                <div id="material-items" class="mt-4 d-flex flex-wrap gap-2"></div>
             </div>
         </div>
     </form>
 </div>
+{% endblock %}
 
-<style>
-    /* Stylizacja podpowiedzi */
-    .suggestions-box {
-        position: absolute;
-        z-index: 1000;
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        max-height: 200px;
-        overflow-y: auto;
-        width: 100%;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .suggestion-item {
-        padding: 10px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
-
-    .suggestion-item:hover {
-        background-color: #f8f9fa;
-    }
-</style>
-
+{% block extra_scripts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -116,29 +98,32 @@
                     dataType: "json",
                     success: function(data) {
                         var suggestions = $("#suggestions");
-                        suggestions.empty();
+                        suggestions.empty().show();
                         $.each(data.items, function(index, item) {
                             suggestions.append("<div class='suggestion-item' data-code='" + item.code + "'>" + item.code + " - " + item.description + "</div>");
                         });
                     }
                 });
             } else {
-                $("#suggestions").empty();
+                $("#suggestions").empty().hide();
             }
         });
 
         // Wybór podpowiedzi
         $(document).on("click", ".suggestion-item", function() {
             $("#item_code").val($(this).data("code"));
-            $("#suggestions").empty();
+            $("#suggestions").empty().hide();
         });
 
         // Wybór grupy materiałowej
         $(".material-group").click(function(e) {
-            e.preventDefault(); // Zapobiega przeładowaniu strony
+            e.preventDefault();
             var groupName = $(this).data("group");
+            
+            // Podświetlenie aktywnego przycisku
+            $('.material-group').removeClass('filter-active');
+            $(this).addClass('filter-active');
 
-            // Pobieranie itemów dla wybranej grupy
             $.ajax({
                 url: "{% url 'get_items_by_group' %}",
                 data: { "group": groupName },
@@ -146,27 +131,29 @@
                 success: function(data) {
                     var materialItems = $("#material-items");
                     materialItems.empty();
-                    if (data.items.length === 0) {
-                        materialItems.append("<p class='text-danger'>Brak itemów w tej grupie.</p>");
-                    } else {
+                    if (data.items.length > 0) {
                         $.each(data.items, function(index, item) {
-                            materialItems.append("<button class='btn btn-outline-success material-item' data-code='" + item.item_code + "'>" + item.item_code + " - " + item.description + "</button>");
+                            materialItems.append("<button class='btn-cyber-outline material-item w-100' data-code='" + item.item_code + "'>" + item.item_code + " - " + item.description + "</button>");
                         });
+                    } else {
+                        materialItems.append("<p class='text-light-color'>Brak itemów w tej grupie.</p>");
                     }
-                },
-                error: function() {
-                    alert("Wystąpił błąd podczas pobierania itemów.");
                 }
             });
         });
 
         // Wybór konkretnego itemu
         $(document).on("click", ".material-item", function(e) {
-            e.preventDefault(); // Zapobiega przeładowaniu strony
-            var itemCode = $(this).data("code");
-            $("#item_code").val(itemCode); // Wypełnia pole "Podaj numer itemu"
+            e.preventDefault();
+            $("#item_code").val($(this).data("code"));
+        });
+        
+        // Ukrywanie sugestii
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.position-relative').length) {
+                $('#suggestions').hide();
+            }
         });
     });
 </script>
-
 {% endblock %}

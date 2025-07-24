@@ -1,132 +1,74 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Moja Aplikacja{% endblock %}</title>
+    <title>ANDO-SYSTEM // {% block title %}SYSTEM GŁÓWNY{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
     
-    <link 
-      rel="stylesheet" 
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    >
-    
-    <link 
-      rel="stylesheet" 
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
-    >
-    
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    
+    <link rel="stylesheet" href="{% static 'css/cyberpunk.css' %}">
+
     {% block extra_head %}{% endblock %}
-    <style>
-        .notification-dropdown {
-            position: absolute;
-            right: 0;
-            background: white;
-            border: 1px solid #ccc;
-            width: 300px;
-            display: none;
-            z-index: 1000;
-        }
-        .notification-dropdown ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .notification-dropdown li {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .notification-dropdown li.unread {
-            font-weight: bold;
-        }
-        .notification-dropdown li a {
-            text-decoration: none;
-            color: black;
-        }
-        .notification-icon {
-            margin-right: 20px;
-        }
-        .notification-icon .badge {
-            position: absolute;
-            top: -5px;
-            right: -10px;
-        }
-    </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <div class="d-flex align-items-center">
-        <a class="navbar-brand me-2" href="{% url 'index' %}">🏭 Panel Produkcji</a>
 
-        {% if user.is_authenticated and is_produkcja and request.session.workplace %}
-            <a class="btn btn-primary me-3" href="{% url 'daily_panel' request.session.workplace %}">📋 Daily Panel</a>
-        {% endif %}
-      </div>
+ <nav class="navbar-cyber">
+    <!-- Ten div jest teraz głównym kontenerem flexbox -->
+    <div class="nav-container">
+        <!-- Lewa strona -->
+        <div class="nav-left">
+            <a class="navbar-brand me-4" href="{% url 'index' %}">ANDO-SYS</a>
+            {% if user.is_authenticated and 'Produkcja' in user.groups.all|join:", " %}
+                <a class="btn-cyber" href="{% url 'daily_panel' %}">PANEL DZIENNY</a>
+            {% endif %}
+        </div>
+      
+        <!-- Prawa strona (wszystkie elementy razem) -->
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                <span class="username-display"><i class="bi bi-person-badge"></i> {{ user.username }}</span>
+                
+                <div class="notification-icon-wrapper">
+                    <a href="#" id="notification-icon">
+                        <i class="bi bi-envelope"></i>
+                        <span id="notification-count" class="notification-badge">0</span>
+                    </a>
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-header">NOWE TRANSMISJE</div>
+                        <ul id="notification-list"></ul>
+                    </div>
+                </div>
 
-      <div class="d-flex align-items-center text-white ms-auto">
-        {% if user.is_authenticated %}
-          <span class="me-3"><i class="bi bi-person-fill"></i> {{ user.username }}</span>
-
-          {% if request.session.workplace and (is_produkcja or is_lider) %}
-            <span class="me-3">🏭 Miejsce pracy: <strong>{{ request.session.workplace|default:"Nie wybrano" }}</strong></span>
-            <form action="{% url 'reset_workplace' %}" method="post" class="d-inline">          
-              {% csrf_token %}
-              <button type="submit" class="btn btn-warning me-2">Zmień miejsce</button>
-            </form>
-          {% endif %}
-
-          <div class="notification-icon" style="position: relative;">
-            <a href="#" id="notification-icon">
-              <i class="bi bi-envelope"></i>
-              <span id="notification-count" class="badge badge-danger">0</span>
-            </a>
-            <div class="notification-dropdown" id="notification-dropdown">
-              <ul id="notification-list"></ul>
-            </div>
-          </div>
-
-          <form action="{% url 'logout' %}" method="post" class="d-inline">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Wyloguj</button>
-          </form>
-        {% endif %}
-      </div>
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-cyber btn-danger">SYSTEM::LOGOUT</button>
+                </form>
+            {% endif %}
+        </div>
     </div>
-  </nav>
-
-  {% if messages %}
-  <div class="container mt-2">
-    {% for msg in messages %}
-      {% if msg.tags == "error" %}
-        <div class="alert alert-danger">
-          {{ msg }}
-        </div>
-      {% elif msg.tags == "success" %}
-        <div class="alert alert-success">
-          {{ msg }}
-        </div>
-      {% else %}
-        <div class="alert alert-info">
-          {{ msg }}
-        </div>
-      {% endif %}
-    {% endfor %}
-  </div>
-  {% endif %}
+</nav>
 
   <div class="container mt-4">
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="cyber-alert {% if msg.tags == 'error' %}cyber-alert-error{% elif msg.tags == 'success' %}cyber-alert-success{% else %}cyber-alert-info{% endif %}">
+                <p class="m-0">>> {{ msg }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     {% block content %}{% endblock %}
   </div>
 
-  <script 
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
-  </script>
-  
-  <script src="{% static 'js/script.js' %}"></script>
+  <footer class="text-center mt-5 p-3">
+    <p style="color: var(--secondary-color); font-family: var(--font-primary); font-size: 0.8rem; letter-spacing: 1px;">
+      SYSTEM STATUS: ONLINE | PROTOCOL: ANDON v2.1 | LOKALIZACJA: SEKTOR 7G
+    </p>
+  </footer>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'js/script.js' %}"></script>
   <script>
     function getCookie(name) {
       let cookieValue = null;
@@ -149,17 +91,27 @@
       function loadNotifications() {
         $.get("{% url 'get_unread_notifications' %}", function(data) {
           $("#notification-count").text(data.count);
+          if (data.count > 0) {
+              $("#notification-count").show();
+          } else {
+              $("#notification-count").hide();
+          }
+
           var list = $("#notification-list");
           list.empty();
-          data.notifications.forEach(function(notification) {
-            var item = $("<li>").addClass(notification.read ? "" : "unread");
-            var link = $("<a>").attr("href", notification.url).text(notification.message).click(function(e) {
-              e.preventDefault();
-              markAsRead(notification.id, notification.url);
+          if (data.notifications.length > 0) {
+            data.notifications.forEach(function(notification) {
+                var item = $("<li>");
+                var link = $("<a>").attr("href", notification.url).text(notification.message).click(function(e) {
+                e.preventDefault();
+                markAsRead(notification.id, notification.url);
+                });
+                item.append(link);
+                list.append(item);
             });
-            item.append(link);
-            list.append(item);
-          });
+          } else {
+              list.append('<li>Brak nowych transmisji.</li>');
+          }
         });
       }
 
@@ -169,8 +121,11 @@
           url: "{% url 'mark_as_read' 0 %}".replace('0', notificationId),
           headers: {'X-CSRFToken': csrftoken},
           success: function() {
-            loadNotifications();
-            window.location.href = url;
+            if (url) {
+                window.location.href = url;
+            } else {
+                loadNotifications();
+            }
           }
         });
       }
@@ -178,11 +133,13 @@
       $("#notification-icon").click(function(e) {
         e.preventDefault();
         $("#notification-dropdown").toggle();
-        loadNotifications();
+        if ($("#notification-dropdown").is(':visible')) {
+            loadNotifications();
+        }
       });
 
       $(document).click(function(e) {
-        if (!$(e.target).closest(".notification-icon").length) {
+        if (!$(e.target).closest(".notification-icon-wrapper").length) {
           $("#notification-dropdown").hide();
         }
       });

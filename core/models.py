@@ -10,7 +10,7 @@ from django.apps import apps
 class Item(models.Model):
     """
     Model do przechowywania danych o przedmiotach (Item).
-    Przykładowe kolumny importowane z Excela: 
+    Przykładowe kolumny importowane z Excela:
       - Item
       - Description
       - Supplier
@@ -111,7 +111,7 @@ class ExcelUpload(models.Model):
 
     def _import_items(self):
         """
-        Importuje listę itemów z pliku Excel. 
+        Importuje listę itemów z pliku Excel.
         - Pomija puste wiersze.
         - Obsługuje liczby zapisane z przecinkiem (zamienia na kropki).
         - Aktualizuje istniejące rekordy lub tworzy nowe.
@@ -121,7 +121,7 @@ class ExcelUpload(models.Model):
         from decimal import Decimal
         from django.core.exceptions import ValidationError
         from .models import Item  # Import modelu, jeśli jest w tym samym pliku
-        
+
         try:
             df = pd.read_excel(self.file.path)
         except Exception as e:
@@ -303,8 +303,8 @@ class ExcelUpload(models.Model):
             ScrapCode.objects.update_or_create(code=code, defaults={"description": description})
 
         if errors:
-            raise ValidationError(errors)        
-    
+            raise ValidationError(errors)
+
 class SupportTicket(models.Model):
     STATUS_CHOICES = [
         ("open", "🟢 Otwarte"),
@@ -320,7 +320,7 @@ class SupportTicket(models.Model):
 
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, verbose_name="Kategoria zgłoszenia")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Zgłoszone przez")
-    workplace = models.CharField(max_length=50, verbose_name="Miejsce pracy")
+    workplace = models.CharField(max_length=50, verbose_name="Miejsce pracy", default="Nie dotyczy")
     description = models.TextField(blank=True, null=True, verbose_name="Opis problemu")
     created_at = models.DateTimeField(default=now, verbose_name="Data utworzenia")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open", verbose_name="Status")
@@ -337,15 +337,14 @@ class QualityReason(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    workplace = models.CharField(max_length=50, verbose_name="Miejsce pracy", blank=True, null=True)
 
     def __str__(self):
-        return f"Profil: {self.user.username}" 
+        return f"Profil: {self.user.username}"
 
-    
+
 class C2MaterialGroup(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name="Grupa materiałowa (np. Korpus, Płytka)")
-    
+
     def __str__(self):
         return self.name
 
@@ -355,7 +354,7 @@ class C2MaterialItem(models.Model):
     description = models.CharField(max_length=200, blank=True, verbose_name="Opis")
 
     def __str__(self):
-        return f"{self.item_code} - {self.description}"    
+        return f"{self.item_code} - {self.description}"
 
 class WarehouseReason(models.Model):
     name = models.CharField(max_length=100, verbose_name="Powód zgłoszenia")
@@ -402,16 +401,16 @@ class WarehouseRequest(models.Model):
 
     def __str__(self):
         return f"{self.get_category_display()} | {self.status} | {self.created_by}"
-    
+
 class WarehouseComment(models.Model):
     ticket = models.ForeignKey(WarehouseRequest, on_delete=models.CASCADE, related_name="comments", verbose_name="Zgłoszenie")
     text = models.TextField(verbose_name="Treść komentarza")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Utworzone przez")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Data utworzenia")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Data edycji")  # Nowe pole
-    
+
     quantity = models.PositiveIntegerField(verbose_name="Ilość", null=True, blank=True)  # Nowe pole
-    
+
 
     def __str__(self):
         return f"Komentarz od {self.created_by} do zgłoszenia {self.ticket.id}"
@@ -427,7 +426,6 @@ class ScrapEntry(models.Model):
     production_line = models.CharField(max_length=5, verbose_name="Linia produkcyjna", default="SC1", null=True, blank=True)
     create_warehouse_request = models.BooleanField(default=False, verbose_name="Utwórz zgłoszenie magazynowe")
     gpg = models.CharField(max_length=50, verbose_name="GPG", null=True, blank=True)
-    workplace = models.CharField(max_length=50, default="ScanCoin", verbose_name="Miejsce pracy", null=True, blank=True)
     supplier = models.CharField(max_length=50, verbose_name="Dostawca", null=True, blank=True)
     description = models.TextField(verbose_name="Opis", null=True, blank=True)
 
@@ -439,16 +437,16 @@ class ScrapEntry(models.Model):
             self.total_cost = self.item.price * self.quantity
 
         # 🚀 Najpierw zapisujemy ScrapEntry do bazy
-        super().save(*args, **kwargs)  
+        super().save(*args, **kwargs)
 
         # Jeśli checkbox jest zaznaczony, tworzymy WarehouseRequest
         if self.create_warehouse_request:
             WarehouseRequest = apps.get_model('core', 'WarehouseRequest')  # 🔹 Lazy import modelu
             WarehouseRequest.objects.create(
-                location=self.production_line,  
+                location=self.production_line,
                 created_by=self.reported_by,
-                category="return",  
-                warehouse_reason=None,  
+                category="return",
+                warehouse_reason=None,
                 description=f"Automatycznie utworzone ze zgłoszenia odpadu: {self.item}",
                 item=self.item,
                 quantity=self.quantity,
@@ -514,11 +512,11 @@ class ProductionLog(models.Model):
     # Data, której dotyczy wykonanie
     date = models.DateField()
 
-    # Numer MO - można też łączyć z ProductionPlan, 
+    # Numer MO - można też łączyć z ProductionPlan,
     # ale często MO jest tylko kluczem tekstowym
     mo_number = models.CharField(max_length=50)
 
-    # Item - jeżeli chcesz relację do Item, 
+    # Item - jeżeli chcesz relację do Item,
     # można dać ForeignKey do Item, albo przechowywać samego stringa
     item_code = models.CharField(max_length=50)
 
@@ -528,7 +526,7 @@ class ProductionLog(models.Model):
     # Dodatkowo linia, GPG, user, itp. – jeśli chcesz
     # lub można je automatycznie wnioskować z ProductionPlan
     # ...
-    
+
     class Meta:
         # ewentualnie ordering
         ordering = ["-date"]
@@ -560,10 +558,10 @@ class CycleCountRequest(models.Model):
     comment = models.TextField(blank=True, verbose_name="Komentarz")
       # Nowe pola:
     closed_by = models.ForeignKey(
-        User, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, 
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="closed_cycle_requests",
         verbose_name="Zamknięte przez"
     )
@@ -590,27 +588,27 @@ class InvRequest(models.Model):
     ]
 
     created_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, 
+        User, on_delete=models.SET_NULL,
         null=True, related_name="inv_requests"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
-        max_length=20, 
-        choices=STATUS_CHOICES, 
+        max_length=20,
+        choices=STATUS_CHOICES,
         default="awaiting_magazyn"
     )
 
     # Jeśli chcesz przechowywać, kto i kiedy zatwierdził *ostatni* krok:
     approved_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, 
-        null=True, blank=True, 
+        User, on_delete=models.SET_NULL,
+        null=True, blank=True,
         related_name="inv_requests_approved"
     )
     approved_at = models.DateTimeField(null=True, blank=True)
 
     rejected_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, 
-        null=True, blank=True, 
+        User, on_delete=models.SET_NULL,
+        null=True, blank=True,
         related_name="inv_requests_rejected"
     )
     rejected_at = models.DateTimeField(null=True, blank=True)
@@ -627,7 +625,7 @@ class InvRequest(models.Model):
 
 class InvRequestLine(models.Model):
     request = models.ForeignKey(
-        InvRequest, on_delete=models.CASCADE, 
+        InvRequest, on_delete=models.CASCADE,
         related_name="lines"
     )
     item = models.ForeignKey("Item", on_delete=models.CASCADE)
@@ -645,7 +643,7 @@ class InvRequestLine(models.Model):
 
     def __str__(self):
         return f"{self.item.item_code} ({self.quantity} szt.)"
-    
+
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     message = models.TextField()

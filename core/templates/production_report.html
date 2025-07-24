@@ -1,371 +1,218 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}RAPORT WYKONANIA PRODUKCJI{% endblock %}
+
 {% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-bar-chart-line-fill"></i> RAPORT WYKONANIA PRODUKCJI</h1>
+        <p class="text-light-color">ANALIZA STANU ZLECEŃ PRODUKCYJNYCH</p>
+    </div>
 
-<style>
-  body {
-    background: #f8f9fa;
-  }
+    <!-- Filtry -->
+    <div class="cyber-card mb-5">
+        <div class="row g-3">
+            <div class="col-lg-8">
+                <strong class="text-light-color d-block mb-2">FILTRUJ WG. LINII:</strong>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn-cyber-outline filter-btn filter-active" data-type="line" data-value="">Wszystkie</button>
+                    <!-- Poprawiona pętla po liniach produkcyjnych -->
+                    {% for line in lines %}
+                        <button class="btn-cyber-outline filter-btn" data-type="line" data-value="{{ line }}">{{ line }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <strong class="text-light-color d-block mb-2">FILTRUJ WG. DATY:</strong>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn-cyber-outline filter-btn" data-type="date" data-value="overdue">Zaległe</button>
+                    <button class="btn-cyber-outline filter-btn" data-type="date" data-value="this_week">Ten tydzień</button>
+                    <button class="btn-cyber-outline filter-btn" data-type="date" data-value="today">Dziś</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  .report-header {
-    background: linear-gradient(to right, #0d6efd, #6610f2);
-    color: #fff;
-    padding: 2rem 1rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    border-radius: 0.5rem;
-  }
+    <!-- Karty ze statystykami -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-3 col-md-6">
+            <div class="cyber-card text-center">
+                <h5 class="text-light-color">OTWARTE ZLECENIA</h5>
+                <p class="h1" id="openOrders">{{ open_orders|default:"0" }}</p>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="cyber-card text-center">
+                <h5 class="text-light-color">ILOŚĆ PLANOWANA</h5>
+                <p class="h1" id="totalPlanned">{{ total_planned|default:"0" }}</p>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="cyber-card text-center">
+                <h5 class="text-light-color">ILOŚĆ WYKONANA</h5>
+                <p class="h1" id="totalDone">{{ total_done|default:"0" }}</p>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="cyber-card text-center">
+                <h5 class="text-light-color">WYKONANIE (%)</h5>
+                <p class="h1" id="globalPercent" style="color: var(--success-color);">{{ global_percent|default:"0" }}%</p>
+            </div>
+        </div>
+    </div>
 
-  .chart-container {
-    background: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    padding: 1rem;
-    height: 500px;
-    max-height: 500px;
-    width: 100%;
-    max-width: 900px;
-    margin: auto;
-    justify-content: center;
-  }
-  canvas {
-    max-height: 100%;
-  }
+    <!-- Wykres -->
+    <div class="cyber-card mb-5" style="height: 500px;">
+        <h3 class="text-center mb-4">PLAN VS. WYKONANIE</h3>
+        <canvas id="planVsDoneChart"></canvas>
+    </div>
 
-  .filter-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 1rem;
-  }
-
-  .filter-buttons button {
-    border: 1px solid #ddd;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .filter-active {
-    background-color: #007bff !important;
-    color: white !important;
-  }
-
-  .status-badge {
-    display: inline-block;
-    padding: 0.25rem 0.6rem;
-    border-radius: 0.5rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-transform: capitalize;
-  }
-
-  /* Kolory dla poszczególnych statusów */
-  .status-new { background-color: #e2e3ff; color: #555; }        /* Fioletowy jasny */
-  .status-in_progress { background-color: #ffe3ba; color: #555; } /* Pomarańczowy */
-  .status-wip { background-color: #cff4fc; color: #555; }         /* Jasny niebieski */
-  .status-printed { background-color: #fff3cd; color: #555; }     /* Żółty */
-  .status-completed { background-color: #d1e7dd; color: #0f5132; } /* Zielony */
-  .status-stopped { background-color: #f8d7da; color: #842029; }  /* Czerwony */
-
-  /* KAFELKI STATYSTYK */
-  .stats-cards .card {
-    border: none;
-    border-radius: 0.75rem;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    background: #ffffff;
-    transition: transform 0.2s ease-in-out;
-  }
-
-  .stats-cards .card:hover {
-    transform: scale(1.03);
-  }
-
-  .stats-cards .card-body {
-    text-align: center;
-    padding: 1.5rem;
-  }
-
-  .stats-cards .progress {
-    height: 5px;
-    border-radius: 10px;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.1);
-  }
-
-  .stats-cards .progress-bar {
-    border-radius: 10px;
-  }
-
-  .bg-primary {
-    background-color: #005eff !important;
-  }
-  .bg-success {
-    background-color: #1e7e34 !important;
-  }
-  .bg-info {
-    background-color: #17a2b8 !important;
-  }
-  .bg-warning {
-    background-color: #ffc107 !important;
-  }
-
-  .stats-cards .card-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 0.5rem;
-  }
-
-  .stats-cards .display-6 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #222;
-  }
-</style>
-
-<div class="report-header">
-  <h1>Raport Wykonania Produkcji</h1>
-  <p>Podsumowanie stanu zleceń produkcyjnych i aktualnego wykonania</p>
+    <!-- Tabela -->
+    <div class="cyber-card">
+        <h3 class="mb-4">SZCZEGÓŁY ZLECEŃ</h3>
+        <div class="table-responsive">
+            <table class="table-cyber">
+                <thead>
+                    <tr>
+                        <th>MO</th>
+                        <th>Data</th>
+                        <th>Item</th>
+                        <th class="text-center">Plan</th>
+                        <th class="text-center">Wykonanie</th>
+                        <th class="text-center">%</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <!-- Dane ładowane przez AJAX -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+{% endblock %}
 
-<div class="container">
-
-  <!-- FILTRY -->
-  <div class="d-flex justify-content-between flex-wrap mb-3">
-    <div class="d-flex flex-wrap gap-2">
-      <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="SC1">ScanCoin</button>
-      {% for line in lines %}
-        <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="{{ line }}">{{ line }}</button>
-      {% endfor %}
-    
-    <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="C2">C2</button>
-      {% for line in lines %}
-        <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="{{ g }}">{{ g }}</button>
-      {% endfor %}
-
-      <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="RM5">RM5</button>
-      {% for line in lines %}
-        <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="{{ line }}">{{ line }}</button>
-      {% endfor %}
-  
-      <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="B2B">B2B</button>
-      {% for line in lines %}
-        <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="{{ g }}">{{ g }}</button>
-      {% endfor %}
-
-      <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="COM">Come</button>
-      {% for line in lines %}
-        <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="{{ line }}">{{ line }}</button>
-      {% endfor %}
-  
-      <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="DC1">Gaming</button>
-      {% for line in lines %}
-        <button class="btn btn-outline-secondary filter-btn" data-type="line" data-value="{{ g }}">{{ g }}</button>
-      {% endfor %}
-    </div>
-
-    <div class="d-flex flex-wrap gap-2">
-      <button class="btn btn-outline-secondary filter-btn" data-type="date" data-value="overdue">Zaległe</button>
-      <button class="btn btn-outline-secondary filter-btn" data-type="date" data-value="this_week">Ten tydzień</button>
-      <button class="btn btn-outline-secondary filter-btn" data-type="date" data-value="today">Dzisiejsze</button>
-    </div>
-  </div>
-
-  <!-- KAFELKI STATYSTYK -->
-  <div class="row row-cols-1 row-cols-md-4 g-4 stats-cards mb-3">
-    <div class="col">
-      <div class="card">
-        <div class="card-body">
-          <div class="progress mb-2">
-            <div class="progress-bar bg-primary" style="width: 100%;"></div>
-          </div>
-          <h5 class="card-title">Otwarte zlecenia</h5>
-          <p class="display-6" id="openOrders">{{ open_orders|default:"0" }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="card">
-        <div class="card-body">
-          <div class="progress mb-2">
-            <div class="progress-bar bg-success" style="width: 100%;"></div>
-          </div>
-          <h5 class="card-title">Ilość planowana</h5>
-          <p class="display-6" id="totalPlanned">{{ total_planned|default:"0" }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="card">
-        <div class="card-body">
-          <div class="progress mb-2">
-            <div class="progress-bar bg-info" style="width: 100%;"></div>
-          </div>
-          <h5 class="card-title">Ilość wykonana</h5>
-          <p class="display-6" id="totalDone">{{ total_done|default:"0" }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="card">
-        <div class="card-body">
-          <div class="progress mb-2">
-            <div class="progress-bar bg-warning" style="width: 100%;"></div>
-          </div>
-          <h5 class="card-title">Wykonanie (%)</h5>
-          <p class="display-6" id="globalPercent">{{ global_percent|default:"0" }}%</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- WYKRES -->
-  <div class="chart-container">
-    <h3>Plan vs. Wykonanie (MO Number)</h3>
-    <canvas id="planVsDoneChart"></canvas>
-  </div>
-
-  <!-- TABELA -->
-  <div class="report-table p-3 mt-4">
-    <h3 class="mb-3">Szczegóły zleceń</h3>
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead>
-          <tr>
-            <th>MO Number</th>
-            <th>Data</th>
-            <th>Item</th>
-            <th>Plan</th>
-            <th>Wykonanie</th>
-            <th>%</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="reportTableBody">
-          {% for row in results %}
-          <tr>
-            <td>{{ row.mo_number }}</td>
-            <td>{{ row.date }}</td>
-            <td>{{ row.item }}</td>
-            <td>{{ row.planned }}</td>
-            <td>{{ row.done }}</td>
-            <td>{{ row.percent }} %</td>
-            <td>
-              <span class="status-badge status-{{ row.status }}">
-                {{ row.status }}
-              </span>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</div>
-
+{% block extra_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
-  let chartInstance;
+    let chartInstance;
 
-  function updateChart(data) {
-    if (chartInstance) {
-      chartInstance.destroy();
+    function updateChart(data) {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+        const ctx = document.getElementById('planVsDoneChart').getContext('2d');
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [
+                    {
+                        label: 'Planowana ilość',
+                        data: data.planned,
+                        backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Wykonana ilość',
+                        data: data.done,
+                        backgroundColor: 'rgba(40, 167, 69, 0.5)',
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#f8f9fa' } },
+                    tooltip: {
+                        backgroundColor: '#212529',
+                        titleColor: '#f8f9fa',
+                        bodyColor: '#adb5bd',
+                        borderColor: '#495057',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'ZLECENIE PRODUKCYJNE (MO)', color: '#adb5bd' },
+                        ticks: { color: '#adb5bd' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'ILOŚĆ', color: '#adb5bd' },
+                        ticks: { color: '#adb5bd' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            }
+        });
     }
-    const ctx = document.getElementById('planVsDoneChart').getContext('2d');
-    chartInstance = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: data.labels,
-        datasets: [
-          {
-            label: 'Planowana ilość',
-            data: data.planned,
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'Wykonana ilość',
-            data: data.done,
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true
-      }
-    });
-  }
 
-  function fetchReportData(filters = {}) {
-    $.ajax({
-      url: "{% url 'get_production_report_data' %}",
-      data: filters,
-      dataType: "json",
-      success: function(response) {
-        updateChart(response);
+    function fetchReportData(filters = {}) {
+        $.ajax({
+            url: "{% url 'get_production_report_data' %}",
+            data: filters,
+            dataType: "json",
+            success: function(response) {
+                updateChart(response);
 
-        let rows = "";
-        response.results.forEach(row => {
-          rows += `
-            <tr>
-              <td>${row.mo_number}</td>
-              <td>${row.date}</td>
-              <td>${row.item}</td>
-              <td>${row.planned}</td>
-              <td>${row.done}</td>
-              <td>${row.percent} %</td>
-              <td><span class="status-badge status-${row.status}">${row.status}</span></td>
-            </tr>
-          `;
+                let rows = "";
+                if (response.results.length > 0) {
+                    response.results.forEach(row => {
+                        rows += `
+                            <tr>
+                                <td>${row.mo_number}</td>
+                                <td>${row.date}</td>
+                                <td>${row.item}</td>
+                                <td class="text-center">${row.planned}</td>
+                                <td class="text-center">${row.done}</td>
+                                <td class="text-center">${row.percent}%</td>
+                                <td><span class="status-badge status-${row.status.toLowerCase()}">${row.status}</span></td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    rows = '<tr><td colspan="7" class="text-center text-light-color py-4">Brak danych dla wybranych filtrów.</td></tr>';
+                }
+                $("#reportTableBody").html(rows);
+
+                $("#openOrders").text(response.stats.open_orders || 0);
+                $("#totalPlanned").text(response.stats.total_planned || 0);
+                $("#totalDone").text(response.stats.total_done || 0);
+                $("#globalPercent").text((response.stats.global_percent || 0) + "%");
+            },
+            error: function() {
+                alert("Błąd pobierania danych raportu");
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        let filters = {};
+
+        $(".filter-btn").click(function() {
+            let type = $(this).data("type");
+            let value = $(this).data("value");
+
+            if (filters[type] === value) {
+                delete filters[type];
+                $(this).removeClass("filter-active");
+            } else {
+                filters[type] = value;
+                $(`.filter-btn[data-type="${type}"]`).removeClass("filter-active");
+                $(this).addClass("filter-active");
+            }
+
+            fetchReportData(filters);
         });
 
-        $("#reportTableBody").html(rows);
-
-        // Aktualizacja statystyk
-        $("#openOrders").text(response.stats.open_orders || 0);
-        $("#totalPlanned").text(response.stats.total_planned || 0);
-        $("#totalDone").text(response.stats.total_done || 0);
-        $("#globalPercent").text(response.stats.global_percent || 0 + "%");
-      },
-      error: function() {
-        alert("Błąd pobierania danych raportu");
-      }
+        fetchReportData();
     });
-  }
-
-  $(document).ready(function() {
-    let filters = {};
-
-    $(".filter-btn").click(function() {
-      let type = $(this).data("type");
-      let value = $(this).data("value");
-
-      if (filters[type] === value) {
-        delete filters[type];
-        $(this).removeClass("filter-active");
-      } else {
-        filters[type] = value;
-        $(".filter-btn[data-type=" + type + "]").removeClass("filter-active");
-        $(this).addClass("filter-active");
-      }
-
-      fetchReportData(filters);
-    });
-
-    fetchReportData();
-  });
 </script>
-
 {% endblock %}
