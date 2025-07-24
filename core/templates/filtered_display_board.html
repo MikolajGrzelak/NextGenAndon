@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+
 {% block title %}
     TABLICA ZGŁOSZEŃ: 
     {% if category == 'technician' %}TECHNIK
@@ -29,7 +29,6 @@
 
     <div class="cyber-grid-container">
         {% for ticket in tickets %}
-        <!-- Dodajemy nową klasę 'card-status-*' oraz 'blinking-card' dla otwartych zgłoszeń -->
         <div class="cyber-card h-100 card-status-{{ ticket.status|lower }} {% if ticket.status == 'open' %}blinking-card{% endif %}">
             <div class="d-flex justify-content-between align-items-start">
                 <h2 class="mb-0">ZGŁOSZENIE #{{ ticket.id }}</h2>
@@ -37,7 +36,6 @@
             </div>
             <hr class="my-3" style="border-color: var(--border-color);">
             
-            <!-- NOWA, DWUKOLUMNOWA SEKCJA SZCZEGÓŁÓW -->
             <div class="ticket-details-grid">
                 <div class="detail-item">
                     <strong>Zgłaszający:</strong>
@@ -72,7 +70,7 @@
             </div>
         </div>
         {% empty %}
-        <div class="col-span-3"> <!-- Rozciągnięcie na 3 kolumny, jeśli siatka jest pusta -->
+        <div class="col-span-3">
             <div class="cyber-card text-center py-5">
                 <h2 class="text-light-color"><i class="bi bi-check-circle"></i> BRAK AKTYWNYCH ZGŁOSZEŃ</h2>
                 <p>System nie wykrył żadnych zgłoszeń w tym sektorze.</p>

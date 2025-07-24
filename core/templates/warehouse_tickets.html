@@ -18,38 +18,52 @@
         </a>
     </div>
 
-    <div class="row g-4">
+    <div class="cyber-grid-container">
         {% for ticket in tickets %}
-        <div class="col-lg-4 col-md-6">
-            <!-- Dodajemy klasę 'blinking-card' dla nowych zgłoszeń -->
-            <div class="cyber-card h-100 {% if ticket.status == 'new' %}blinking-card{% endif %}">
-                <div class="d-flex justify-content-between align-items-start">
-                    <h4 class="mb-0">ZGŁOSZENIE #{{ ticket.id }}</h4>
-                    <span class="status-badge status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span>
+        <div class="cyber-card h-100 card-status-{{ ticket.status|lower }} {% if ticket.status == 'new' %}blinking-card{% endif %}">
+            <div class="d-flex justify-content-between align-items-start">
+                <h2 class="mb-0">ZGŁOSZENIE #{{ ticket.id }}</h2>
+                <span class="status-badge status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span>
+            </div>
+            <p class="text-light-color">{{ ticket.get_location_display }}</p>
+            <hr class="my-3" style="border-color: var(--border-color);">
+            
+            <div class="ticket-details-grid">
+                <div class="detail-item">
+                    <strong>Zgłaszający:</strong>
+                    <span>{{ ticket.created_by.username }}</span>
                 </div>
-                <p class="text-light-color">{{ ticket.get_location_display }}</p>
-                <hr class="my-3" style="border-color: var(--border-color);">
-                
-                <div class="ticket-details">
-                    <p><strong>Komponent:</strong><br>{{ ticket.item.item_code }}</p>
-                    <p><strong>Ilość:</strong> {{ ticket.quantity }} szt.</p>
-                    <p><strong>Opis:</strong><br>{{ ticket.description|default:"Brak opisu." }}</p>
+                <div class="detail-item">
+                    <strong>Data zgłoszenia:</strong>
+                    <span>{{ ticket.created_at|date:"Y-m-d H:i:s" }}</span>
                 </div>
+                <div class="detail-item">
+                    <strong>Komponent:</strong>
+                    <span>{{ ticket.item.item_code }}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Ilość:</strong>
+                    <span>{{ ticket.quantity }} szt.</span>
+                </div>
+                <div class="detail-item-full">
+                    <strong>Opis:</strong>
+                    <span>{{ ticket.description|default:"Brak opisu." }}</span>
+                </div>
+            </div>
 
-                <div class="mt-auto pt-3 d-flex flex-column gap-2">
-                    <a href="{% url 'warehouse_ticket_detail' ticket.id %}" class="btn-cyber-outline w-100">
-                        <i class="bi bi-chat-left-text"></i> Zobacz / Komentuj
-                    </a>
-                    {% if ticket.status == "new" %}
-                        <a href="{% url 'take_warehouse_ticket' ticket.id %}" class="btn-cyber btn-warning w-100">Podejmij</a>
-                    {% elif ticket.status == "in_progress" %}
-                        <a href="{% url 'close_warehouse_ticket' ticket.id %}" class="btn-cyber btn-success w-100">Zamknij</a>
-                    {% endif %}
-                </div>
+            <div class="mt-auto pt-3 d-flex flex-column gap-2">
+                <a href="{% url 'warehouse_ticket_detail' ticket.id %}" class="btn-cyber-outline w-100">
+                    <i class="bi bi-chat-left-text"></i> Zobacz / Komentuj
+                </a>
+                {% if ticket.status == "new" %}
+                    <a href="{% url 'take_warehouse_ticket' ticket.id %}" class="btn-cyber btn-warning w-100">Podejmij</a>
+                {% elif ticket.status == "in_progress" %}
+                    <a href="{% url 'close_warehouse_ticket' ticket.id %}" class="btn-cyber btn-success w-100">Zamknij</a>
+                {% endif %}
             </div>
         </div>
         {% empty %}
-        <div class="col">
+        <div class="col-span-3">
             <div class="cyber-card text-center py-5">
                 <h2 class="text-light-color"><i class="bi bi-check-circle"></i> BRAK AKTYWNYCH ZGŁOSZEŃ</h2>
                 <p>System nie wykrył żadnych zgłoszeń do magazynu.</p>

@@ -591,26 +591,72 @@ def call_engineer(request):
     return render(request, "call_engineer.html")
 
 @login_required
-def display_board(request, category):
-    # Define the desired order for statuses
+def main_display_board(request):
+    """
+    Widok dla GŁÓWNEJ tablicy, grupujący aktywne tickety 
+    z różnych działów (SupportTicket i WarehouseRequest).
+    """
+    active_support_statuses = ['open', 'in_progress']
+    active_warehouse_statuses = ['new', 'in_progress']
+
+    support_tickets = SupportTicket.objects.filter(status__in=active_support_statuses).order_by('created_at')
+    warehouse_tickets = WarehouseRequest.objects.filter(status__in=active_warehouse_statuses).order_by('created_at')
+
+    grouped_tickets = {
+        'Technicy': [],
+        'Inżynierowie': [],
+        'Jakość': [],
+        'Magazyn': []
+    }
+
+    for ticket in support_tickets:
+        if ticket.category == 'technician':
+            grouped_tickets['Technicy'].append(ticket)
+        elif ticket.category == 'engineer':
+            grouped_tickets['Inżynierowie'].append(ticket)
+        elif ticket.category == 'quality':
+            grouped_tickets['Jakość'].append(ticket)
+
+    for ticket in warehouse_tickets:
+        grouped_tickets['Magazyn'].append(ticket)
+
+    final_grouped_tickets = {category: tickets for category, tickets in grouped_tickets.items() if tickets}
+    has_any_tickets = bool(final_grouped_tickets)
+
+    context = {
+        'grouped_tickets': final_grouped_tickets,
+        'has_any_tickets': has_any_tickets,
+    }
+    return render(request, "main_display_board.html", context)
+
+
+@login_required
+def filtered_display_board(request, category):
+    """
+    Widok dla FILTROWANEJ tablicy, pokazujący zgłoszenia 
+    tylko dla wybranej kategorii (np. 'technician').
+    """
     status_order = Case(
         When(status='open', then=Value(1)),
         When(status='in_progress', then=Value(2)),
         default=Value(3),
         output_field=IntegerField()
     )
-
-    # Get all relevant tickets
+    
     tickets = SupportTicket.objects.filter(
         category=category
     ).filter(
         Q(status__in=["open", "in_progress"]) | 
-        Q(status="resolved", resolved_at__gt=TWO_DAYS_AGO)
+        Q(status="resolved", resolved_at__gt=now() - timedelta(days=2))
     ).annotate(
         status_order=status_order
-    ).order_by('status_order', '-created_at')
+    ).order_by('status_order', 'created_at')
     
-    return render(request, "display_board.html", {"tickets": tickets, "category": category})
+    context = {
+        "tickets": tickets,
+        "category": category,
+    }
+    return render(request, "filtered_display_board.html", context)
 
 @login_required
 def take_ticket(request, ticket_id):

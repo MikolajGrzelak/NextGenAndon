@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}GŁÓWNA TABLICA ZGŁOSZEŃ{% endblock %}
+
+{% block extra_head %}
+<!-- Auto-odświeżanie strony co 10 sekund -->
+<meta http-equiv="refresh" content="10">
+{% endblock %}
+
+{% block content %}
+<div class="cyber-container">
+    <div class="text-center mb-5">
+        <h1 class="mb-3"><i class="bi bi-display-fill"></i> GŁÓWNA TABLICA ZGŁOSZEŃ</h1>
+        <p class="text-light-color">MONITORING WSZYSTKICH AKTYWNYCH ZGŁOSZEŃ W CZASIE RZECZYWISTYM</p>
+    </div>
+
+    {% if has_any_tickets %}
+        {% for category_name, tickets in grouped_tickets.items %}
+        <div class="mb-5">
+            <h2 class="mb-4 section-title">{{ category_name }}</h2>
+            <div class="cyber-grid-container">
+                {% for ticket in tickets %}
+                    {% if category_name == 'Magazyn' %}
+                        {% include 'partials/warehouse_ticket_card.html' with ticket=ticket %}
+                    {% else %}
+                        {% include 'partials/support_ticket_card.html' with ticket=ticket %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="cyber-card text-center py-5">
+            <h2 class="text-light-color"><i class="bi bi-check-circle"></i> BRAK AKTYWNYCH ZGŁOSZEŃ</h2>
+            <p>Wszystkie systemy działają poprawnie.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

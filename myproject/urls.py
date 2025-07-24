@@ -44,6 +44,7 @@ from core.views import (
     inv_request_detail,
     inv_request_approve,
     inv_request_reject,
+    main_display_board
 )
 
 
@@ -72,7 +73,12 @@ urlpatterns = [
     path("call-technician/", views.call_technician, name="call_technician"),
     path("call-quality/", views.call_quality, name="call_quality"),
     path("call-engineer/", views.call_engineer, name="call_engineer"),
-    path('display-board/<str:category>/', views.display_board, name='display_board'),
+      # Nowy, uniwersalny adres dla GŁÓWNEJ tablicy
+    path("display_board/", views.main_display_board, name="main_display_board"),
+    
+    # Adres dla tablic filtrowanych po kategorii
+    path("display_board/<str:category>/", views.filtered_display_board, name="filtered_display_board"),
+    # ... reszta Twoich ścieżek ...
     path("take-ticket/<int:ticket_id>/", views.take_ticket, name="take_ticket"),
     path("close-ticket/<int:ticket_id>/", views.close_ticket, name="close_ticket"),
     path("register-scrap/", views.register_scrap, name="register_scrap"),

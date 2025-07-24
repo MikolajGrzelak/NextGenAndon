@@ -1,0 +1,40 @@
+<div class="cyber-card h-100 card-status-{{ ticket.status|lower }} {% if ticket.status == 'open' %}blinking-card{% endif %}">
+    <div class="d-flex justify-content-between align-items-start">
+        <h2 class="mb-0">ZGŁOSZENIE #{{ ticket.id }}</h2>
+        <span class="status-badge status-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span>
+    </div>
+    <hr class="my-3" style="border-color: var(--border-color);">
+    
+    <div class="ticket-details-grid">
+        <div class="detail-item">
+            <strong>Zgłaszający:</strong>
+            <span>{{ ticket.created_by.username }}</span>
+        </div>
+        <div class="detail-item">
+            <strong>Data zgłoszenia:</strong>
+            <span>{{ ticket.created_at|date:"Y-m-d H:i:s" }}</span>
+        </div>
+        {% if ticket.assigned_to %}
+        <div class="detail-item">
+            <strong>Przypisano do:</strong>
+            <span>{{ ticket.assigned_to.username }}</span>
+        </div>
+        <div class="detail-item">
+            <strong>Data podjęcia:</strong>
+            <span>{{ ticket.taken_at|date:"Y-m-d H:i:s" }}</span>
+        </div>
+        {% endif %}
+        <div class="detail-item-full">
+            <strong>Opis:</strong>
+            <span>{{ ticket.description|default:"Brak opisu." }}</span>
+        </div>
+    </div>
+
+    <div class="mt-auto pt-3">
+        {% if ticket.status == 'open' %}
+            <a href="{% url 'take_ticket' ticket.id %}" class="btn-cyber btn-warning w-100">PODEJMIJ ZGŁOSZENIE</a>
+        {% elif ticket.status == 'in_progress' and ticket.assigned_to == user %}
+            <a href="{% url 'close_ticket' ticket.id %}" class="btn-cyber btn-success w-100">ZAMKNIJ ZGŁOSZENIE</a>
+        {% endif %}
+    </div>
+</div>
