@@ -1,14 +1,17 @@
-{% raw %}{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <title>ANDO-SYSTEM // {% block title %}SYSTEM GŁÓWNY{% endblock %}</title>
 
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
     
+    <!-- Twoje style Cyberpunk -->
     <link rel="stylesheet" href="{% static 'css/cyberpunk.css' %}">
 
     {% block extra_head %}{% endblock %}
@@ -17,12 +20,15 @@
 
  <nav class="navbar-cyber">
     <div class="nav-container">
+        <!-- Lewa strona -->
         <div class="nav-left">
             <a class="navbar-brand me-4" href="{% url 'index' %}">ANDO-SYS</a>
             {% if user.is_authenticated and 'Produkcja' in user.groups.all|join:", " %}
                 <a class="btn-cyber" href="{% url 'daily_panel' %}">PANEL DZIENNY</a>
             {% endif %}
         </div>
+        
+        <!-- Prawa strona -->
         <div class="nav-right">
             {% if user.is_authenticated %}
                 <span class="username-display"><i class="bi bi-person-badge"></i> {{ user.username }}</span>
@@ -65,11 +71,11 @@
     </p>
  </footer>
 
+ <!-- Skrypty JavaScript -->
  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
  <script src="{% static 'js/script.js' %}"></script>
  <script>
-    // Twój kod JS pozostaje bez zmian
     function getCookie(name) {
       let cookieValue = null;
       if (document.cookie && document.cookie !== '') {
@@ -148,4 +154,4 @@
     });
  </script>
 </body>
-</html>{% endraw %}
+</html>
