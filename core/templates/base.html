@@ -1,10 +1,12 @@
-{% load static %}
+{% raw %}{% load static %}
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <title>ANDO-SYSTEM // {% block title %}SYSTEM GŁÓWNY{% endblock %}</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
     
     <link rel="stylesheet" href="{% static 'css/cyberpunk.css' %}">
@@ -14,17 +16,13 @@
 <body>
 
  <nav class="navbar-cyber">
-    <!-- Ten div jest teraz głównym kontenerem flexbox -->
     <div class="nav-container">
-        <!-- Lewa strona -->
         <div class="nav-left">
             <a class="navbar-brand me-4" href="{% url 'index' %}">ANDO-SYS</a>
             {% if user.is_authenticated and 'Produkcja' in user.groups.all|join:", " %}
                 <a class="btn-cyber" href="{% url 'daily_panel' %}">PANEL DZIENNY</a>
             {% endif %}
         </div>
-      
-        <!-- Prawa strona (wszystkie elementy razem) -->
         <div class="nav-right">
             {% if user.is_authenticated %}
                 <span class="username-display"><i class="bi bi-person-badge"></i> {{ user.username }}</span>
@@ -49,7 +47,7 @@
     </div>
 </nav>
 
-  <div class="container mt-4">
+ <div class="container mt-4">
     {% if messages %}
         {% for msg in messages %}
             <div class="cyber-alert {% if msg.tags == 'error' %}cyber-alert-error{% elif msg.tags == 'success' %}cyber-alert-success{% else %}cyber-alert-info{% endif %}">
@@ -59,17 +57,19 @@
     {% endif %}
 
     {% block content %}{% endblock %}
-  </div>
+ </div>
 
-  <footer class="text-center mt-5 p-3">
+ <footer class="text-center mt-5 p-3">
     <p style="color: var(--secondary-color); font-family: var(--font-primary); font-size: 0.8rem; letter-spacing: 1px;">
       SYSTEM STATUS: ONLINE | PROTOCOL: ANDON v2.1 | LOKALIZACJA: SEKTOR 7G
     </p>
-  </footer>
+ </footer>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="{% static 'js/script.js' %}"></script>
-  <script>
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+ <script src="{% static 'js/script.js' %}"></script>
+ <script>
+    // Twój kod JS pozostaje bez zmian
     function getCookie(name) {
       let cookieValue = null;
       if (document.cookie && document.cookie !== '') {
@@ -146,6 +146,6 @@
 
       loadNotifications();
     });
-  </script>
+ </script>
 </body>
-</html>
+</html>{% endraw %}
