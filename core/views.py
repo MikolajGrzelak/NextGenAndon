@@ -561,7 +561,7 @@ def call_technician(request):
         # Tworzenie powiadomień dla grupy Techników
         technik_group = Group.objects.get(name="Technik")
         for user in technik_group.user_set.all():
-            create_notification(user, f"Nowe zgłoszenie do technika od {ticket.created_by}", url=f"/display-board/technician/")
+            create_notification(user, f"Nowe zgłoszenie do technika od {ticket.created_by}", url=f"/display_board/technician/")
 
         messages.success(request, "Zgłoszenie do technika zostało wysłane!")
         return redirect("filtered_display_board", category="technician")
