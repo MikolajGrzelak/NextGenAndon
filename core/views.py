@@ -542,7 +542,7 @@ def call_quality(request):
             create_notification(user, f"Nowe zgłoszenie do jakości", url=f"/display-board/quality/")
 
         messages.success(request, "Zgłoszenie do technika zostało wysłane!")
-        return redirect("display_board", category="quality")
+        return redirect("filtered_display_board", category="quality")
 
     return render(request, "call_quality.html")
 
@@ -564,7 +564,7 @@ def call_technician(request):
             create_notification(user, f"Nowe zgłoszenie do technika od {ticket.created_by}", url=f"/display-board/technician/")
 
         messages.success(request, "Zgłoszenie do technika zostało wysłane!")
-        return redirect("display_board", category="technician")
+        return redirect("filtered_display_board", category="technician")
 
     return render(request, "call_technician.html")
 
@@ -586,7 +586,7 @@ def call_engineer(request):
             create_notification(user, f"Nowe zgłoszenie do inżyniera od {ticket.created_by}", url=f"/display-board/engineer/")
 
         messages.success(request, "Zgłoszenie do inżyniera zostało wysłane!")
-        return redirect("display_board", category="engineer")
+        return redirect("filtered_display_board", category="engineer")
 
     return render(request, "call_engineer.html")
 
@@ -666,7 +666,7 @@ def take_ticket(request, ticket_id):
     ticket.taken_at = now()
     ticket.save()
     messages.success(request, "✅ Zgłoszenie zostało podjęte!")
-    return redirect("display_board", category=ticket.category)
+    return redirect("filtered_display_board", category=ticket.category)
 
 @login_required
 def close_ticket(request, ticket_id):
@@ -676,7 +676,7 @@ def close_ticket(request, ticket_id):
     ticket.resolved_at = now()
     ticket.save()
     messages.success(request, "✅ Zgłoszenie zostało zamknięte!")
-    return redirect("display_board", category=ticket.category)
+    return redirect("filtered_display_board", category=ticket.category)
 
 def register_scrap_success(request):
     return render(request, "register_scrap_success.html")
