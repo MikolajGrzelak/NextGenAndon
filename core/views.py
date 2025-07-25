@@ -539,7 +539,7 @@ def call_quality(request):
          # Tworzenie powiadomień dla grupy Jakości
         quality_group = Group.objects.get(name="Jakość")
         for user in quality_group.user_set.all():
-            create_notification(user, f"Nowe zgłoszenie do jakości", url=f"/display-board/quality/")
+            create_notification(user, f"Nowe zgłoszenie do jakości", url=f"/display_board/quality/")
 
         messages.success(request, "Zgłoszenie do technika zostało wysłane!")
         return redirect("filtered_display_board", category="quality")
@@ -583,7 +583,7 @@ def call_engineer(request):
          # Tworzenie powiadomień dla grupy Inżynierów
         engineer_group = Group.objects.get(name="Inżynier")
         for user in engineer_group.user_set.all():
-            create_notification(user, f"Nowe zgłoszenie do inżyniera od {ticket.created_by}", url=f"/display-board/engineer/")
+            create_notification(user, f"Nowe zgłoszenie do inżyniera od {ticket.created_by}", url=f"/display_board/engineer/")
 
         messages.success(request, "Zgłoszenie do inżyniera zostało wysłane!")
         return redirect("filtered_display_board", category="engineer")
