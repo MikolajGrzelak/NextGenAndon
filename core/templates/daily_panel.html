@@ -46,19 +46,19 @@
     <!-- Sekcja Monitoringu -->
     <h3 class="mb-4">MONITORING I RAPORTOWANIE</h3>
     <div class="cyber-grid-container">
-        <a href="{% url 'display_board' category='technician' %}" class="text-decoration-none">
+        <a href="{% url 'filtered_display_board' category='technician' %}" class="text-decoration-none">
             <div class="cyber-card text-center">
                 <h3><i class="bi bi-display"></i></h3>
                 <p class="mt-2">TABLICA TECHNIKÓW</p>
             </div>
         </a>
-        <a href="{% url 'display_board' category='engineer' %}" class="text-decoration-none">
+        <a href="{% url 'filtered_display_board' category='engineer' %}" class="text-decoration-none">
             <div class="cyber-card text-center">
                 <h3><i class="bi bi-display"></i></h3>
                 <p class="mt-2">TABLICA INŻYNIERÓW</p>
             </div>
         </a>
-        <a href="{% url 'display_board' category='quality' %}" class="text-decoration-none">
+        <a href="{% url 'filtered_display_board' category='quality' %}" class="text-decoration-none">
             <div class="cyber-card text-center">
                 <h3><i class="bi bi-display"></i></h3>
                 <p class="mt-2">TABLICA JAKOŚCI</p>
